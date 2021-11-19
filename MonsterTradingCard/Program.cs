@@ -1,4 +1,5 @@
 ﻿using System;
+using MonsterTradingCard.UserRelated.User;
 
 namespace MonsterTradingCard
 {
@@ -6,7 +7,16 @@ namespace MonsterTradingCard
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            User user1 = new User();
+            User user2 = new User();
+
+            for(int i = 0; i < 5; i++)
+                user1.BuyPackage();
+
+            for (int i = 0; i < 4; i++)
+                user2.BuyPackage();
+
+
         }
     }
 }

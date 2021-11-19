@@ -1,0 +1,3 @@
+﻿TODO:
+Kaufoption, checke auf coins
+stack, hat monstercards und spellcards getrennt => package LINQ abfrage unterteilen 
