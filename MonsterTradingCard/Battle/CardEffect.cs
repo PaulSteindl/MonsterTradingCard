@@ -1,30 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using MonsterTradingCard.Abstract.Card;
 using MonsterTradingCard.Enums;
 
-namespace MonsterTradingCard.Battle
+namespace MonsterTradingCard.Battle.CardEffect
 {
     enum CardEffectEnum { Scared, Controlled, Drowned, Immune, Evade };
 
-    class CardEffect
+    public class CardEffect
     {
         private CardEffectEnum?[] EffectArray = new CardEffectEnum?[2];
         private Card[] CardArray = new Card[2];
 
-        CardEffect(Card c1, Card c2)
+        public CardEffect(Card c1, Card c2)
         {
             CardArray[0] = c1;
             CardArray[1] = c2;
         }
 
+        private Dictionary<Element, Element> Element_Dictonary = new Dictionary<Element, Element>()
+        {
+
+        };
+
+        private void ElementEffect()
+        {
+            int j = 2;
+            for (int i = 0; i < 2; i++)
+            {
+                --j;
+
+                //if(Element_Dictonary<CardArray[i].Element, CardArray[j].Element>.Has)
+
+            }
+        }
+
         public void SpecialEffect()
         {
-            EffectArray[0] = GetEffect(CardArray[0], CardArray[1]);
-            EffectArray[1] = GetEffect(CardArray[1], CardArray[0]);
+            ElementEffect();
+
+            EffectArray[0] = GetSpecialEffect(CardArray[0], CardArray[1]);
+            EffectArray[1] = GetSpecialEffect(CardArray[1], CardArray[0]);
 
             if (EffectArray[0].HasValue && EffectArray[1].HasValue)
                 throw new ArgumentException();
@@ -32,7 +52,7 @@ namespace MonsterTradingCard.Battle
                 ApplieEffect();
         }
 
-        private static CardEffectEnum? GetEffect(Card Card1, Card Card2)
+        private static CardEffectEnum? GetSpecialEffect(Card Card1, Card Card2)
         { 
             switch (Card1.CardType)
             {
@@ -79,24 +99,24 @@ namespace MonsterTradingCard.Battle
                     switch (EffectArray[i])
                     {
                         case CardEffectEnum.Controlled:
-                            Console.WriteLine($"{CardArray[j].Name} kontrolliert {CardArray[i].Name}!\n");
+                            Console.WriteLine($"{CardArray[j].Name} kontrolliert {CardArray[i].Name}!");
                             CardArray[i].Dmg = -1;
                             break;
 
                         case CardEffectEnum.Drowned:
-                            Console.WriteLine($"{CardArray[i].Name} ist ertrunken!\n");
+                            Console.WriteLine($"{CardArray[i].Name} ist ertrunken!");
                             CardArray[i].Dmg = -1;
                             break;
 
                         case CardEffectEnum.Immune:
-                            Console.WriteLine($"{CardArray[j].Name} hat keinen Effekt auf {CardArray[i].Name}!\n");
+                            Console.WriteLine($"{CardArray[j].Name} hat keinen Effekt auf {CardArray[i].Name}!");
                             CardArray[j].Dmg = -1;
                             break;
 
                         case CardEffectEnum.Evade:
                             if (CardArray[i].Dmg < CardArray[j].Dmg)
                             { 
-                                Console.WriteLine($"{CardArray[i]} weicht dem Angriff von {CardArray[j].Name} aus!\n");
+                                Console.WriteLine($"{CardArray[i]} weicht dem Angriff von {CardArray[j].Name} aus!");
                                 CardArray[j].Dmg = CardArray[i].Dmg;
                             }
                             break;
@@ -104,7 +124,7 @@ namespace MonsterTradingCard.Battle
                         case CardEffectEnum.Scared:
                             if (CardArray[i].Dmg > CardArray[j].Dmg)
                             {
-                                Console.WriteLine($"{CardArray[i]} hat zu viel Angst um anzugreifen!\n");
+                                Console.WriteLine($"{CardArray[i]} hat zu viel Angst um anzugreifen!");
                                 CardArray[i].Dmg = CardArray[j].Dmg;
                             }
                             break;
@@ -114,7 +134,6 @@ namespace MonsterTradingCard.Battle
                     }
                 }
             }
-            throw new Exception("In ApplieEffect kamm es zu einem Fehler!");
         }
     }
 }

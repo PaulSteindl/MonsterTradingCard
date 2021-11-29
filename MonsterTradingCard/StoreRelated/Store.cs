@@ -16,7 +16,7 @@ namespace MonsterTradingCard.StoreRelated.Store
             if(user.Coins > price)
             {
                 Package package = new Package();
-                package.
+                
             }
         }
     }

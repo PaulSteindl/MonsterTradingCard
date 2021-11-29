@@ -7,8 +7,8 @@ using MonsterTradingCard.Abstract.Card;
 
 namespace MonsterTradingCard.CardRelated.CardStack
 {
-    class CardStack
+    public class CardStack
     {
-        List<Card> cards;
+        List<Card> Cards;
     }
 }

@@ -8,8 +8,11 @@ using MonsterTradingCard.Enums;
 
 namespace MonsterTradingCard.CardRelated.MonsterCard
 {
-    class MonsterCard : Card
+    public class MonsterCard : Card
     {
-        public MonsterCard(byte dmg, Element element, CardType cardType) : base(dmg, element, cardType) { }
+        public MonsterCard(byte dmg, Element element, CardType cardType) : base(dmg, element, cardType) {
+            if (cardType == CardType.Spell)
+                throw new ArgumentException("Monster kann nicht vom typ Spell sein");
+        }
     }
 }

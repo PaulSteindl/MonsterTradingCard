@@ -4,18 +4,57 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MonsterTradingCard.Abstract.Card;
-using MonsterTradingCard.Battle;
-using MonsterTradingCard.Enums
+using MonsterTradingCard.Enums;
+using MSCCE = MonsterTradingCard.Battle.CardEffect;
+using MonsterTradingCard.UserRelated.User;
 
-namespace MonsterTradingCard.Battle
+namespace MonsterTradingCard.Battle.Fight
 {
-    class Fight
+    public class Fight
     {
-        private CardEffect CardEffect;
-
-        public Winner CardBattle(Card Card1, Card Card2)
+        public Winner CardBattle(Card card1, Card card2)
         {
-            CardEffect.SpecialEffect(Card1, Card2);
+            MSCCE.CardEffect CardEffect = new MSCCE.CardEffect(card1, card2);
+            CardEffect.SpecialEffect();
+
+            if (card1.Dmg > card2.Dmg)
+            {
+                Console.WriteLine($"{card1.Name} gewinnt den Kampf!");
+                return Winner.PlayerOne;
+            }
+            else if(card1.Dmg < card2.Dmg)
+            {
+                Console.WriteLine($"{card2.Name} gewinnt den Kampf!");
+                return Winner.PlayerTwo;
+            }
+            else
+            {
+                Console.WriteLine($"Es ist ein Unentschieden!");
+                return Winner.Draw;
+            }
         }
+
+        public bool CheckForWin(User user1, User user2, int rounds)
+        {
+            if (user2.Deck != null)
+            {
+                Console.WriteLine($"{user1.Username} gewinnt das Match, Glückwunsch!");
+                return true;
+            }
+            else if (user1.Deck != null)
+            {
+                Console.WriteLine($"{user2.Username} gewinnt das Match, Glückwunsch!");
+                return true;
+            }
+            else if (rounds > 100)
+            {
+                Console.WriteLine($"Es kommt zu einem Unentschieden!");
+                return true;
+            }
+
+            return false;
+        }
+
+
     }
 }

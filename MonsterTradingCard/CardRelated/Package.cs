@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MonsterTradingCard.Abstract.Card;
 using MonsterTradingCard.Enums;
-using MonsterTradingCard.CardRelated.MonsterCard;
+using MTCMC = MonsterTradingCard.CardRelated.MonsterCard;
 
 namespace MonsterTradingCard.CardRelated.Package
 {
@@ -15,7 +15,7 @@ namespace MonsterTradingCard.CardRelated.Package
         byte choose = 4;
 
         public List<Card> CardList { get; }
-        Package()
+        public Package()
         {
             for(int i = 0; i < size; i++)
             {
@@ -27,7 +27,7 @@ namespace MonsterTradingCard.CardRelated.Package
                         break;
 
                     case 1:
-                        MonsterCard card = new MonsterCard();
+                        //MTCMC.MonsterCard card = new MTCMC.MonsterCard();
                         break;
 
                     default:

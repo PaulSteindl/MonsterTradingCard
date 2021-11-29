@@ -8,8 +8,8 @@ using MonsterTradingCard.Enums;
 
 namespace MonsterTradingCard.CardRelated.SpellCard
 {
-    class SpellCard : Card
+    public class SpellCard : Card
     {
-        public SpellCard(byte dmg, Element element, CardType cardType) : base(dmg, element, cardType) { }
+        public SpellCard(byte dmg, Element element) : base(dmg, element, CardType.Spell) { }
     }
 }

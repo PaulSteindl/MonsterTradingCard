@@ -9,13 +9,13 @@ using MonsterTradingCard.CardRelated.CardStack;
 
 namespace MonsterTradingCard.UserRelated.User
 {
-    class User
+    public class User
     {
-        public string username;
+        public string Username { get; }
 
         private string Email;
         private Guid Token;
-        private CardStack Deck;
+        public CardStack Deck { get; set; }
         private CardStack Stack;
         public int Coins { get; set; }
     }
