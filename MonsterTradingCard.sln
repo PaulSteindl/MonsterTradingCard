@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonsterTradingCard", "MonsterTradingCard\MonsterTradingCard.csproj", "{E216C7D0-92FB-407A-BB71-9AECF435D87C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitsTests", "UnitsTests\UnitsTests.csproj", "{C1D56877-2CC6-4B1B-8E71-84C2C50F94D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitsTests", "UnitsTests\UnitsTests.csproj", "{C1D56877-2CC6-4B1B-8E71-84C2C50F94D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTTPServerCore", "HTTPServerCore\HTTPServerCore.csproj", "{27DE9E7F-8055-4D48-AA0C-AC963AF5F39E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{C1D56877-2CC6-4B1B-8E71-84C2C50F94D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1D56877-2CC6-4B1B-8E71-84C2C50F94D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1D56877-2CC6-4B1B-8E71-84C2C50F94D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27DE9E7F-8055-4D48-AA0C-AC963AF5F39E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27DE9E7F-8055-4D48-AA0C-AC963AF5F39E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27DE9E7F-8055-4D48-AA0C-AC963AF5F39E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27DE9E7F-8055-4D48-AA0C-AC963AF5F39E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
