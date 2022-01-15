@@ -13,6 +13,10 @@ namespace MonsterTradingCard.DAL.Database
 
         public IMESSAGE.IMessageRepository MessageRepository { get; private set; }
         public IUSER.IUserRepository UserRepository { get; private set; }
+        public ICardRepository CardRepository { get; private set; }
+        public IDeckRepository DeckRepository { get; private set; }
+        public IHighscoreRepository HighscoreRepository { get; private set; }
+        public IPackageRepository PackageRepository { get; private set;  }
 
         public Database(string connectionString)
         {
