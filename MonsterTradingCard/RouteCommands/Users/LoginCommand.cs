@@ -36,6 +36,7 @@ namespace MonsterTradingCard.RouteCommands.Users.LoginCommand
             if (user == null)
             {
                 response.StatusCode = StatusCode.Unauthorized;
+                response.Payload = "Passwort oder Benutzer ungültig!";
             }
             else
             {

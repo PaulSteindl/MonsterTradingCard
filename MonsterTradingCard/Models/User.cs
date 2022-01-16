@@ -7,6 +7,6 @@ namespace MonsterTradingCard.Models.User
         public string Username { get; set; }
         public string Password { get; set; }
 
-        public string Token => $"{Username}-msgToken";
+        public string Token => $"{Username}-mtcgToken";
     }
 }

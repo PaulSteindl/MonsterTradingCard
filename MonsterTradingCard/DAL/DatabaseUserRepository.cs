@@ -8,7 +8,34 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
 {
     class DatabaseUserRepository : IUSERREPO.IUserRepository
     {
-        private const string CreateTableCommand = "CREATE TABLE IF NOT EXISTS users (username VARCHAR PRIMARY KEY, password VARCHAR, token VARCHAR)";
+        private const string CreateTableCommand =   @"create table if not exists users
+                                                    (
+                                                        username varchar                     not null,
+                                                        password varchar                     not null,
+                                                        token    varchar                     not null,
+                                                        user_id  serial
+                                                            constraint users_pk
+                                                                primary key,
+                                                        bio      text,
+                                                        image    text    default '-.-'::text not null,
+                                                        wins     integer default 0           not null,
+                                                        loses    integer default 0           not null,
+                                                        winrate  real    default 0           not null
+                                                    );
+
+                                                            alter table users
+                                                                owner to postgres;
+
+                                                            create unique index if not exists users_user_id_uindex
+                                                                on users(user_id);
+
+                                                            create unique index if not exists users_token_uindex
+                                                                on users(token);
+
+                                                            create unique index if not exists users_username_uindex
+                                                                on users(username);
+
+                                                    ";
 
         private const string InsertUserCommand = "INSERT INTO users(username, password, token) VALUES (@username, @password, @token)";
         private const string SelectUserByTokenCommand = "SELECT username, password FROM users WHERE token=@token";

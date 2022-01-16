@@ -25,10 +25,12 @@ namespace MonsterTradingCard.RouteCommands.Users.RegisterCommand
             {
                 messageManager.RegisterUser(Credentials);
                 response.StatusCode = StatusCode.Created;
+                response.Payload = Credentials.Username + " erfolgreich erstellt";
             }
             catch (DUPLICATEUSER.DuplicateUserException)
             {
                 response.StatusCode = StatusCode.Conflict;
+                response.Payload = Credentials.Username + " existiert bereits!";
             }
 
             return response;

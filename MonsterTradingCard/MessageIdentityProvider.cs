@@ -1,8 +1,8 @@
-﻿using HTTPServerCore.Authentication.IIdentity;
-using HTTPServerCore.Authentication.IIdentityProvider;
+﻿using HTTPServerCore.Authentication.IIdentityProvider;
+using HTTPServerCore.Authentication.IIdentity;
 using HTTPServerCore.Request.RequestContext;
-using MonsterTradingCard.DAL.IUserRepository;
 using MonsterTradingCard.Models.User;
+using MonsterTradingCard.DAL.IUserRepository;
 
 namespace MonsterTradingCard.MessageIdentityProvider
 {

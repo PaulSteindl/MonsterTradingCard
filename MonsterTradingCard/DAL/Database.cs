@@ -1,18 +1,18 @@
 ﻿using Npgsql;
 using DAFE = MonsterTradingCard.DAL.DataAccessFailedException;
-using IMESSAGE = MonsterTradingCard.DAL.IMessageRepository;
 using IUSER = MonsterTradingCard.DAL.IUserRepository;
+using ICARD = MonsterTradingCard.DAL.ICardRepository;
 using DATA_USER_REPO = MonsterTradingCard.DAL.DatabaseUserRepository;
-using DATA_MESSAGE_REPO = MonsterTradingCard.DAL.DatabaseMessageRepository;
+using DATA_CARD_REPO = MonsterTradingCard.DAL.DatabaseCardRepository;
 
 namespace MonsterTradingCard.DAL.Database
 {
     class Database
     {
         private readonly NpgsqlConnection _connection;
-
-        public IMESSAGE.IMessageRepository MessageRepository { get; private set; }
         public IUSER.IUserRepository UserRepository { get; private set; }
+
+        public ICARD.ICardRepository CardRepository { get; private set; }
 
         public Database(string connectionString)
         {
@@ -24,7 +24,7 @@ namespace MonsterTradingCard.DAL.Database
                 // first users, then messages
                 // we need this special order since messages has a foreign key to users
                 UserRepository = new DATA_USER_REPO.DatabaseUserRepository(_connection);
-                MessageRepository = new DATA_MESSAGE_REPO.DatabaseMessageRepository(_connection);
+                CardRepository = new DATA_CARD_REPO.DatabaseCardRepository(_connection);
             }
             catch (NpgsqlException e)
             {
