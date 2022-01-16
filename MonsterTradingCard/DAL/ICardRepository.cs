@@ -6,7 +6,7 @@ namespace MonsterTradingCard.DAL.ICardRepository
     public interface ICardRepository
     {
         IEnumerable<Card> GetCards(string username);
-        void InsertCard(Card card);
-
+        bool InsertCard(Card card);
+        public Card SelectCardById(string cardId);
     }
 }

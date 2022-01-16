@@ -40,6 +40,7 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
         private const string InsertUserCommand = "INSERT INTO users(username, password, token) VALUES (@username, @password, @token)";
         private const string SelectUserByTokenCommand = "SELECT username, password FROM users WHERE token=@token";
         private const string SelectUserByCredentialsCommand = "SELECT username, password FROM users WHERE username=@username AND password=@password";
+        private const string SelectUserStatsByTokenCommand = "SELECT username, bio, image, wins, loses, winrate FROM users WHERE token=@token";
 
         private readonly NpgsqlConnection _connection;
 
@@ -102,6 +103,24 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
             }
             return affectedRows > 0;
         }
+
+        //public User SelectUserStatsByToken(string token)
+        //{
+        //    User user = null;
+        //    using (var cmd = new NpgsqlCommand(SelectUserStatsByTokenCommand, _connection))
+        //    {
+        //        cmd.Parameters.AddWithValue("username", username);
+        //        cmd.Parameters.AddWithValue("password", password);
+
+        //        // take the first row, if any
+        //        using var reader = cmd.ExecuteReader();
+        //        if (reader.Read())
+        //        {
+        //            user = ReadUser(reader);
+        //        }
+        //    }
+        //    return user;
+        //}
 
         private void EnsureTables()
         {

@@ -36,6 +36,7 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
 
         private const string InsertCardCommand = "INSERT INTO cards(card_id, name, dmg) VALUES (@card_id, @name, @dmg)";
         private const string SelectCardsByTokenCommand = "SELECT name, dmg, \"tradeOpen\" FROM cards WHERE token=@token";
+        private const string SelectCardByIdCommand = "SELECT * FROM cards WHERE card_id=@card_id";
 
         private readonly NpgsqlConnection _connection;
 
@@ -64,15 +65,39 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
             return cards;
         }
 
-        public void InsertCard(Card card)
+        public bool InsertCard(Card card)
         {
-            using var cmd = new NpgsqlCommand(InsertCardCommand, _connection);
-            cmd.Parameters.AddWithValue("card_id", card.Id);
-            cmd.Parameters.AddWithValue("name", card.Name);
-            cmd.Parameters.AddWithValue("dmg", card.Dmg);
-            var result = cmd.ExecuteScalar();
+            var affectedRows = 0;
+            try
+            {
+                using var cmd = new NpgsqlCommand(InsertCardCommand, _connection);
+                cmd.Parameters.AddWithValue("card_id", card.Id);
+                cmd.Parameters.AddWithValue("name", card.Name);
+                cmd.Parameters.AddWithValue("dmg", card.Damage);
+                affectedRows = cmd.ExecuteNonQuery();
+            }
+            catch (PostgresException)
+            {
 
-            card.Dmg = Convert.ToInt32(result);
+            }
+            return affectedRows > 0;
+        }
+
+        public Card SelectCardById(string cardId)
+        {
+            var card = new Card();
+
+            using (var cmd = new NpgsqlCommand(SelectCardByIdCommand, _connection))
+            {
+                cmd.Parameters.AddWithValue("card_id", cardId);
+
+                using var reader = cmd.ExecuteReader();
+                if(reader.Read())
+                {
+                    card = ReadCard(reader);
+                }
+            }
+            return card;
         }
 
         private void EnsureTables()
@@ -87,7 +112,7 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
             {
                 Id = Convert.ToString(record["id"]),
                 Name = Convert.ToString(record["name"]),
-                Dmg = Convert.ToInt32(record["dmg"])
+                Damage = Convert.ToInt32(record["dmg"])
             };
 
             return message;

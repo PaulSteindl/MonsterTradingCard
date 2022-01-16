@@ -8,11 +8,14 @@ using IMESSAGE_MANAGER = MonsterTradingCard.IMessageManager;
 using MSG_ID_PROVIDER = MonsterTradingCard.MessageIdentityProvider;
 using MonsterTradingCard.RouteCommands.Users.RegisterCommand;
 using MonsterTradingCard.RouteCommands.Users.LoginCommand;
+using MonsterTradingCard.RouteCommands.Packages.CreatePackageCommand;
 using MonsterTradingCard.Models.Credentials;
+using MonsterTradingCard.Models.Card;
 using MonsterTradingCard.DAL.Database;
 using HTTPServerCore.Routing.Router;
 using HTTPServerCore.Request.MethodUtilities;
 using HTTPServerCore.Server.HttpServer;
+using System.Collections.Generic;
 
 //Stripe - paymant gateway
 namespace MonsterTradingCard
@@ -22,7 +25,7 @@ namespace MonsterTradingCard
         static void Main(string[] args)
         {
             var db = new Database("Host=localhost;Port=5432;Username=postgres;Password=123;Database=swe1messagedb");
-            var messageManager = new MSGMANAGER.MessageManager(db.UserRepository);
+            var messageManager = new MSGMANAGER.MessageManager(db.UserRepository, db.CardRepository, db.PackageRepository);
 
             var identityProvider = new MSG_ID_PROVIDER.MessageIdentityProvider(db.UserRepository);
             var routeParser = new ID_ROUTE_PARSER.IdRouteParser();
@@ -45,6 +48,7 @@ namespace MonsterTradingCard
             router.AddRoute(HttpMethod.Post, "/users", (r, p) => new RegisterCommand(messageManager, Deserialize<Credentials>(r.Payload)));
 
             // protected routes
+            router.AddProtectedRoute(HttpMethod.Post, "/packages", (r, p) => new CreatePackageCommand(messageManager, Deserialize<List<Card>>(r.Payload)));
         }
 
         private static T Deserialize<T>(string payload) where T : class

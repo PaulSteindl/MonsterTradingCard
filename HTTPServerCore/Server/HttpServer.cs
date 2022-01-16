@@ -67,7 +67,8 @@ namespace HTTPServerCore.Server.HttpServer
             {
                 response = new RESPONSE.Response()
                 {
-                    StatusCode = STATUSCODE.StatusCode.Unauthorized
+                    StatusCode = STATUSCODE.StatusCode.Unauthorized,
+                    Payload = "Ungültiger User!"
                 };
             }
 

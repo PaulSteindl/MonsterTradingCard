@@ -40,6 +40,7 @@ namespace MonsterTradingCard.RouteCommands.Users.LoginCommand
             }
             else
             {
+
                 response.StatusCode = StatusCode.Ok;
                 response.Payload = user.Token;
             }
