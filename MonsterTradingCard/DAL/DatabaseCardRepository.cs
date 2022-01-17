@@ -33,7 +33,7 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
                                                     ";
 
         private const string InsertCardCommand = "INSERT INTO cards(card_id, name, dmg) VALUES (@card_id, @name, @dmg)";
-        private const string SelectCardsByTokenCommand = "SELECT name, dmg, \"tradeOpen\" FROM cards WHERE token=@token";
+        private const string SelectCardsByTokenCommand = "SELECT * FROM cards WHERE token=@token";
         private const string SelectCardByIdCommand = "SELECT * FROM cards WHERE card_id=@card_id";
         private const string UpdateCardOwnerByTokenCommand = "UPDATE cards SET token=@token WHERE card_id=@card_id";
 
@@ -45,7 +45,7 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
             EnsureTables();
         }
 
-        public IEnumerable<Card> GetCards(string token)
+        public IEnumerable<Card> GetCardsByToken(string token)
         {
             var cards = new List<Card>();
 

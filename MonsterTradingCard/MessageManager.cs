@@ -104,5 +104,10 @@ namespace MonsterTradingCard.MessageManager
             foreach (string cardId in package.CardIds)
                 cardRepository.UpdateCardOwner(cardId, authToken);
         }
+
+        public IEnumerable<Card> GetCards(string authToken)
+        {
+            return cardRepository.GetCardsByToken(authToken);
+        }
     }
 }

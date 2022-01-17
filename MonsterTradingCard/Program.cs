@@ -10,6 +10,7 @@ using MonsterTradingCard.RouteCommands.Users.RegisterCommand;
 using MonsterTradingCard.RouteCommands.Users.LoginCommand;
 using MonsterTradingCard.RouteCommands.Packages.CreatePackageCommand;
 using MonsterTradingCard.RouteCommands.Packages.AcquirePackageCommand;
+using MonsterTradingCard.RouteCommands.Cards.ShowAcquiredCardsCommand;
 using MonsterTradingCard.Models.Credentials;
 using MonsterTradingCard.Models.Card;
 using MonsterTradingCard.DAL.Database;
@@ -51,7 +52,7 @@ namespace MonsterTradingCard
             // protected routes
             router.AddProtectedRoute(HttpMethod.Post, "/packages", (r, p) => new CreatePackageCommand(messageManager, Deserialize<List<Card>>(r.Payload)));
             router.AddProtectedRoute(HttpMethod.Post, "/transactions/packages", (r, p) => new AcquirePackageCommand(messageManager));
-            //router.AddProtectedRoute(HttpMethod.Post, "/cards", (r, p) => new ShowAqcuiredCards(messageManager));
+            router.AddProtectedRoute(HttpMethod.Get, "/cards", (r, p) => new ShowAcquiredCardsCommand(messageManager));
         }
 
         private static T Deserialize<T>(string payload) where T : class
