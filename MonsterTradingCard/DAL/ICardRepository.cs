@@ -9,5 +9,6 @@ namespace MonsterTradingCard.DAL.ICardRepository
         bool InsertCard(Card card);
         Card SelectCardById(string cardId);
         void UpdateCardOwner(string cardId, string authToken);
+        Card SelectCardByIdAndToken(string cardId, string authToken);
     }
 }

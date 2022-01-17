@@ -116,7 +116,7 @@ namespace MonsterTradingCard.MessageManager
 
         public List<Card> GetDeck(string authToken)
         {
-            var deck = deckRepository.GetDeckByToken(authToken);
+            var deck = deckRepository.SelectDeckByToken(authToken);
             var cardList = new List<Card>();
 
             if (deck != null && deck.CardIds.Count == 4)
@@ -132,6 +132,26 @@ namespace MonsterTradingCard.MessageManager
                 throw new INVALIDDECK.DeckNot4CardsException();
 
             return cardList;
+        }
+
+        public bool CheckCardAndUser(string cardId, string authToken)
+        {
+            return cardRepository.SelectCardByIdAndToken(cardId, authToken) == null ? false : true;
+        }
+
+        public bool UserDeckExists(string authToken)
+        {
+            return deckRepository.SelectDeckByToken(authToken) == null ? false : true;
+        }
+
+        public void UpdateDeck(string authToken, List<string> cardIds)
+        {
+            deckRepository.UpdateDeckByToken(authToken, cardIds);
+        }
+
+        public int CreateDeck(string authToken, List<string> cardIds)
+        {
+            return deckRepository.InsertDeck(authToken, cardIds);
         }
     }
 }

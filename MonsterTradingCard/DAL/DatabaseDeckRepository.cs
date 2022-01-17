@@ -59,6 +59,9 @@ namespace MonsterTradingCard.DAL.DatabaseDeckRepository
                                                     ";
 
         private const string SelectDeckByTokenCommand = "SELECT * FROM decks WHERE token=@token";
+        private const string UpdateDeckByTokenCommand = "UPDATE decks SET card1_id=@card1_id, card2_id=@card2_id, card3_id=@card3_id, card4_id=@card4_id WHERE token=@token";
+        private const string InsertDeckCommand = "INSERT INTO decks(token, card1_id, card2_id, card3_id, card4_id) VALUES (@token, @card1_id, @card2_id, @card3_id, @card4_id) RETURNING deck_id";
+        //private const string DeleteDeckByToken = "DELETE FROM decks WHERE token=@token";
 
         private readonly NpgsqlConnection _connection;
 
@@ -68,7 +71,7 @@ namespace MonsterTradingCard.DAL.DatabaseDeckRepository
             EnsureTables();
         }
 
-        public Deck GetDeckByToken(string authToken)
+        public Deck SelectDeckByToken(string authToken)
         {
             Deck deck = null;
 
@@ -84,6 +87,31 @@ namespace MonsterTradingCard.DAL.DatabaseDeckRepository
             }
 
             return deck;
+        }
+
+        public void UpdateDeckByToken(string authToken, List<string> cardIds)
+        {
+            using var cmd = new NpgsqlCommand(UpdateDeckByTokenCommand, _connection);
+            cmd.Parameters.AddWithValue("card1_id", cardIds[0]);
+            cmd.Parameters.AddWithValue("card2_id", cardIds[1]);
+            cmd.Parameters.AddWithValue("card3_id", cardIds[2]);
+            cmd.Parameters.AddWithValue("card4_id", cardIds[3]);
+            cmd.Parameters.AddWithValue("token", authToken);
+            cmd.ExecuteNonQuery();
+        }
+
+        public int InsertDeck(string authToken, List<string> cardIds)
+        {
+            using var cmd = new NpgsqlCommand(InsertDeckCommand, _connection);
+            cmd.Parameters.AddWithValue("token", authToken);
+            cmd.Parameters.AddWithValue("card1_id", cardIds[0]);
+            cmd.Parameters.AddWithValue("card2_id", cardIds[1]);
+            cmd.Parameters.AddWithValue("card3_id", cardIds[2]);
+            cmd.Parameters.AddWithValue("card4_id", cardIds[3]);
+            var result = cmd.ExecuteScalar();
+
+            return Convert.ToInt32(result);
+
         }
 
         private void EnsureTables()

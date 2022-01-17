@@ -18,5 +18,9 @@ namespace MonsterTradingCard.IMessageManager
         void AcquirePackage(Package package, string authToken);
         IEnumerable<Card> GetCards(string authToken);
         List<Card> GetDeck(string authToken);
+        bool CheckCardAndUser(string cardId, string authToken);
+        bool UserDeckExists(string authToken);
+        void UpdateDeck(string authToken, List<string> cardIds);
+        int CreateDeck(string authToken, List<string> cardIds);
     }
 }

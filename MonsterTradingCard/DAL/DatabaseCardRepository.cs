@@ -35,6 +35,7 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
         private const string SelectCardsByTokenCommand = "SELECT * FROM cards WHERE token=@token";
         private const string SelectCardByIdCommand = "SELECT * FROM cards WHERE card_id=@card_id";
         private const string UpdateCardOwnerByTokenCommand = "UPDATE cards SET token=@token WHERE card_id=@card_id";
+        private const string SelectCardByIdAndTokenCommand = "SELECT * FROM cards WHERE card_id=@card_id AND token=@token";
 
         private readonly NpgsqlConnection _connection;
 
@@ -104,6 +105,24 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
             cmd.Parameters.AddWithValue("token", authToken);
             cmd.Parameters.AddWithValue("card_id", cardId);
             cmd.ExecuteNonQuery();
+        }
+
+        public Card SelectCardByIdAndToken(string cardId, string authToken)
+        {
+            Card card = null;
+
+            using (var cmd = new NpgsqlCommand(SelectCardByIdAndTokenCommand, _connection))
+            {
+                cmd.Parameters.AddWithValue("card_id", cardId);
+                cmd.Parameters.AddWithValue("token", authToken);
+
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    card = ReadCard(reader);
+                }
+            }
+            return card;
         }
 
         private void EnsureTables()

@@ -5,7 +5,6 @@ using MonsterTradingCard.Models.Card;
 using DECKINVALID = MonsterTradingCard.DeckNot4CardsException;
 using PROT_ROUTE_COM = MonsterTradingCard.RouteCommands.ProtectedRouteCommand;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
-using System;
 
 namespace MonsterTradingCard.RouteCommands.Decks.ShowDeckCommand
 {
@@ -30,7 +29,6 @@ namespace MonsterTradingCard.RouteCommands.Decks.ShowDeckCommand
 
                 if (jsonString == string.Empty)
                 {
-                    response.Payload = "Leeres Deck!\n";
                     response.StatusCode = StatusCode.NoContent;
                 }
                 else
