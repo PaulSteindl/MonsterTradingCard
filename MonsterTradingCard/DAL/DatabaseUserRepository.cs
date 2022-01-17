@@ -21,21 +21,21 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
                                                         image    text    default '-.-'::text not null,
                                                         wins     integer default 0           not null,
                                                         loses    integer default 0           not null,
-                                                        winrate  real    default 0           not null
+                                                        winrate  real    default 0           not null,
+                                                        coins    integer default 20          not null
                                                     );
 
-                                                            alter table users
-                                                                owner to postgres;
+                                                    alter table users
+                                                        owner to postgres;
 
-                                                            create unique index if not exists users_user_id_uindex
-                                                                on users(user_id);
+                                                    create unique index if not exists users_user_id_uindex
+                                                        on users (user_id);
 
-                                                            create unique index if not exists users_token_uindex
-                                                                on users(token);
+                                                    create unique index if not exists users_token_uindex
+                                                        on users (token);
 
-                                                            create unique index if not exists users_username_uindex
-                                                                on users(username);
-
+                                                    create unique index if not exists users_username_uindex
+                                                        on users (username);
                                                     ";
 
         private const string InsertUserCommand = "INSERT INTO users(username, password, token) VALUES (@username, @password, @token)";

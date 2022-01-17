@@ -9,7 +9,7 @@ namespace MonsterTradingCard.DAL.DatabasePackageRepository
 {
     class DatabasePackageRepository : IPACKAGEREPO.IPackageRepository
     {
-        private const string CreateTableCommand = @"create table if not exists packages
+        private const string CreateTableCommand =   @"create table if not exists packages
                                                     (
                                                         package_id serial
                                                             constraint packages_pk

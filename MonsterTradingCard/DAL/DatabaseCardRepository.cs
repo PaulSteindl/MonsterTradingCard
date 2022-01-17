@@ -29,7 +29,6 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
 
                                                             create unique index if not exists cards_card_id_uindex
                                                                 on cards(card_id);
-
                                                     ";
 
         private const string InsertCardCommand = "INSERT INTO cards(card_id, name, dmg) VALUES (@card_id, @name, @dmg)";
