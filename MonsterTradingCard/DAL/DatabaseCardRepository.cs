@@ -16,27 +16,26 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
                                                                 primary key,
                                                         name        text                  not null,
                                                         dmg         integer               not null,
-                                                        token       text
+                                                        ""tradeOpen"" boolean default false not null,
+                                                        token text
                                                             constraint cards_users_token_fk
                                                                 references users(token)
-                                                                on update cascade on delete cascade,
-                                                        ""tradeOpen"" boolean default false not null
+                                                                on update cascade on delete cascade
+                                                                deferrable initially deferred
                                                     );
 
-                                                            alter table cards
-                                                                owner to postgres;
+                                                    alter table cards
+                                                        owner to postgres;
 
                                                             create unique index if not exists cards_card_id_uindex
                                                                 on cards(card_id);
-
-                                                            create unique index if not exists cards_user_id_uindex
-                                                                on cards(token);
 
                                                     ";
 
         private const string InsertCardCommand = "INSERT INTO cards(card_id, name, dmg) VALUES (@card_id, @name, @dmg)";
         private const string SelectCardsByTokenCommand = "SELECT name, dmg, \"tradeOpen\" FROM cards WHERE token=@token";
         private const string SelectCardByIdCommand = "SELECT * FROM cards WHERE card_id=@card_id";
+        private const string UpdateCardOwnerByTokenCommand = "UPDATE cards SET token=@token WHERE card_id=@card_id";
 
         private readonly NpgsqlConnection _connection;
 
@@ -100,6 +99,14 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
             return card;
         }
 
+        public void UpdateCardOwner(string cardId, string authToken)
+        {
+            using var cmd = new NpgsqlCommand(UpdateCardOwnerByTokenCommand, _connection);
+            cmd.Parameters.AddWithValue("token", authToken);
+            cmd.Parameters.AddWithValue("card_id", cardId);
+            cmd.ExecuteNonQuery();
+        }
+
         private void EnsureTables()
         {
             using var cmd = new NpgsqlCommand(CreateTableCommand, _connection);
@@ -110,7 +117,7 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
         {
             var message = new Card
             {
-                Id = Convert.ToString(record["id"]),
+                Id = Convert.ToString(record["card_id"]),
                 Name = Convert.ToString(record["name"]),
                 Damage = Convert.ToInt32(record["dmg"])
             };

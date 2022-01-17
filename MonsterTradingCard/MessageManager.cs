@@ -76,11 +76,33 @@ namespace MonsterTradingCard.MessageManager
             packageRepository.InsertPackage(package);
         }
 
+        public Package SelectRandomPackage()
+        {
+            return packageRepository.SelectRandomPackage();
+        }
+
+        public bool CheckCoins(string authToken)
+        {
+            int coinsAvailabel = 0;
+
+            coinsAvailabel = userRepository.SelectCoinsByToken(authToken);
+
+            return coinsAvailabel >= 5;
+        }
+
         public void CardExistence(List<Card> cards)
         {
             foreach (Card card in cards)
                 if (cardRepository.SelectCardById(card.Id) == null)
                     throw new DUPCARD.DuplicateCardException(card.Id);
+        }
+
+        public void AcquirePackage(Package package, string authToken)
+        {
+            packageRepository.UpdatePackageOwner(package.Id, authToken);
+            userRepository.UpdateCoinsByMinus5(authToken);
+            foreach (string cardId in package.CardIds)
+                cardRepository.UpdateCardOwner(cardId, authToken);
         }
     }
 }

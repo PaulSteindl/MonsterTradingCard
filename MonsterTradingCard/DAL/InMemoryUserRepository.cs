@@ -36,5 +36,8 @@ namespace MonsterTradingCard.DAL.InMemoryUserRepository
         {
             return users.SingleOrDefault(u => u.Username == username);
         }
+
+        public int SelectCoinsByToken(string authToken) { return 0; }
+        public void UpdateCoinsByMinus5(string authToken) { }
     }
 }

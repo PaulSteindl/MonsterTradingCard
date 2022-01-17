@@ -5,6 +5,6 @@ namespace MonsterTradingCard.Models.Card
     {
         public string Id { get; set; } 
         public string Name { get; set; }
-        public int Dmg { get; set; }
+        public double Damage { get; set; }
     }
 }

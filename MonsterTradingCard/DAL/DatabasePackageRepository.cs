@@ -60,6 +60,8 @@ namespace MonsterTradingCard.DAL.DatabasePackageRepository
                                                     ";
 
         private const string InsertPackageCommand = "INSERT INTO packages(card1_id, card2_id, card3_id, card4_id, card5_id) VALUES (@card1_id, @card2_id, @card3_id, @card4_id, @card5_id)";
+        private const string SelectRandomPackageWithNoOwnerCommand = "SELECT package_id, card1_id, card2_id, card3_id, card4_id, card5_id FROM packages WHERE owner IS NULL";
+        private const string UpdatePackageOwnerByTokenCommand = "UPDATE packages SET owner=@owner WHERE package_id=@package_id";
 
         private readonly NpgsqlConnection _connection;
 
@@ -80,13 +82,39 @@ namespace MonsterTradingCard.DAL.DatabasePackageRepository
             var result = cmd.ExecuteScalar();
         }
 
+        public Package SelectRandomPackage()
+        {
+            var packages = new List<Package>();
+            Random random = new Random();
+
+            using (var cmd = new NpgsqlCommand(SelectRandomPackageWithNoOwnerCommand, _connection))
+            {
+                using var reader = cmd.ExecuteReader();
+                while(reader.Read())
+                {
+                    var package = ReadUnClaimedPackage(reader);
+                    packages.Add(package);
+                }
+            }
+
+            return packages.Count > 0 ? packages[random.Next() % packages.Count] : null;
+        }
+
+        public void UpdatePackageOwner(int packageId, string authToken)
+        {
+            using var cmd = new NpgsqlCommand(UpdatePackageOwnerByTokenCommand, _connection);
+            cmd.Parameters.AddWithValue("owner", authToken);
+            cmd.Parameters.AddWithValue("package_id", packageId);
+            cmd.ExecuteNonQuery();
+        }
+
         private void EnsureTables()
         {
             using var cmd = new NpgsqlCommand(CreateTableCommand, _connection);
             cmd.ExecuteNonQuery();
         }
 
-        private Package ReadPackage(IDataRecord record)
+        private Package ReadClaimedPackage(IDataRecord record)
         {
             var cardIds = new List<string>();
 
@@ -100,6 +128,24 @@ namespace MonsterTradingCard.DAL.DatabasePackageRepository
             {
                 Id = Convert.ToInt32(record["package_id"]),
                 Owner = Convert.ToString(record["owner"]),
+                CardIds = cardIds
+            };
+            return package;
+        }
+
+        private Package ReadUnClaimedPackage(IDataRecord record)
+        {
+            var cardIds = new List<string>();
+
+            cardIds.Add(Convert.ToString(record["card1_id"]));
+            cardIds.Add(Convert.ToString(record["card2_id"]));
+            cardIds.Add(Convert.ToString(record["card3_id"]));
+            cardIds.Add(Convert.ToString(record["card4_id"]));
+            cardIds.Add(Convert.ToString(record["card5_id"]));
+
+            var package = new Package
+            {
+                Id = Convert.ToInt32(record["package_id"]),
                 CardIds = cardIds
             };
             return package;

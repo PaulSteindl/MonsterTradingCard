@@ -3,6 +3,7 @@ using IUSERREPO = MonsterTradingCard.DAL.IUserRepository;
 using MonsterTradingCard.Models.User;
 using System;
 using System.Data;
+using System.Globalization;
 
 namespace MonsterTradingCard.DAL.DatabaseUserRepository
 {
@@ -40,7 +41,9 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
         private const string InsertUserCommand = "INSERT INTO users(username, password, token) VALUES (@username, @password, @token)";
         private const string SelectUserByTokenCommand = "SELECT username, password FROM users WHERE token=@token";
         private const string SelectUserByCredentialsCommand = "SELECT username, password FROM users WHERE username=@username AND password=@password";
-        private const string SelectUserStatsByTokenCommand = "SELECT username, bio, image, wins, loses, winrate FROM users WHERE token=@token";
+        private const string SelectUserStatsByTokenCommand = "SELECT username, bio, image, wins, loses, winrate, coins FROM users WHERE token=@token";
+        private const string SelectCoinsByTokenCommand = "SELECT coins FROM users WHERE token=@token";
+        private const string UpdateCoinsByMinus5Command = "UPDATE users SET coins=coins - 5 WHERE token=@token";
 
         private readonly NpgsqlConnection _connection;
 
@@ -103,7 +106,7 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
             }
             return affectedRows > 0;
         }
-
+        
         //public User SelectUserStatsByToken(string token)
         //{
         //    User user = null;
@@ -122,6 +125,33 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
         //    return user;
         //}
 
+        public int SelectCoinsByToken(string authToken)
+        {
+            int coins = 0;
+
+            using (var cmd = new NpgsqlCommand(SelectCoinsByTokenCommand, _connection))
+            {
+                cmd.Parameters.AddWithValue("token", authToken);
+
+                using var reader = cmd.ExecuteReader();
+                if(reader.Read())
+                {
+                    coins = ReadCoins(reader).Coins;
+                }
+            }
+
+            return coins;
+        }
+
+        public void UpdateCoinsByMinus5(string authToken)
+        {
+            using (var cmd = new NpgsqlCommand(UpdateCoinsByMinus5Command, _connection))
+            {
+                cmd.Parameters.AddWithValue("token", authToken);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
         private void EnsureTables()
         {
             using var cmd = new NpgsqlCommand(CreateTableCommand, _connection);
@@ -134,6 +164,23 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
             {
                 Username = Convert.ToString(record["username"]),
                 Password = Convert.ToString(record["password"])
+            };
+
+            return user;
+        }
+
+        private User ReadCoins(IDataRecord record)
+        {
+            var user = new User
+            {
+                //Username = Convert.ToString(record["username"]),
+                //Password = Convert.ToString(record["password"]),
+                //Bio = Convert.ToString(record["bio"]),
+                //Image = Convert.ToString(record["image"]),
+                //Wins = Convert.ToInt32(record["wins"]),
+                //Loses = Convert.ToInt32(record["loses"]),
+                //Winrate = float.Parse(Convert.ToString(record["winrate"]), CultureInfo.InvariantCulture.NumberFormat),
+                Coins = Convert.ToInt32(record["coins"])
             };
             return user;
         }
