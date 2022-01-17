@@ -1,10 +1,12 @@
 ﻿using MonsterTradingCard.DAL.IUserRepository;
 using MonsterTradingCard.DAL.ICardRepository;
 using MonsterTradingCard.DAL.IPackageRepository;
+using MonsterTradingCard.DAL.IDeckRepository;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
 using USER_NOT_FOUND = MonsterTradingCard.UserNotFoundException;
 using DUPUSER = MonsterTradingCard.DuplicateUserException;
 using DUPCARD = MonsterTradingCard.DuplicateCardException;
+using INVALIDDECK = MonsterTradingCard.DeckNot4CardsException;
 using MonsterTradingCard.Models.User;
 using MonsterTradingCard.Models.Credentials;
 using MonsterTradingCard.Models.Package;
@@ -19,12 +21,14 @@ namespace MonsterTradingCard.MessageManager
         private readonly IUserRepository userRepository;
         private readonly ICardRepository cardRepository;
         private readonly IPackageRepository packageRepository;
+        private readonly IDeckRepository deckRepository;
 
-        public MessageManager(IUserRepository userRepository, ICardRepository cardRepository, IPackageRepository packageRepository)
+        public MessageManager(IUserRepository userRepository, ICardRepository cardRepository, IPackageRepository packageRepository, IDeckRepository deckRepository)
         {
             this.userRepository = userRepository;
             this.cardRepository = cardRepository;
             this.packageRepository = packageRepository;
+            this.deckRepository = deckRepository;
         }
 
         public User LoginUser(Credentials credentials)
@@ -108,6 +112,26 @@ namespace MonsterTradingCard.MessageManager
         public IEnumerable<Card> GetCards(string authToken)
         {
             return cardRepository.GetCardsByToken(authToken);
+        }
+
+        public List<Card> GetDeck(string authToken)
+        {
+            var deck = deckRepository.GetDeckByToken(authToken);
+            var cardList = new List<Card>();
+
+            if (deck != null && deck.CardIds.Count == 4)
+            {
+                foreach (string cardId in deck.CardIds)
+                    cardList.Add(cardRepository.SelectCardById(cardId)); 
+            }
+            else if(deck == null)
+            {
+                return cardList;
+            }
+            else
+                throw new INVALIDDECK.DeckNot4CardsException();
+
+            return cardList;
         }
     }
 }

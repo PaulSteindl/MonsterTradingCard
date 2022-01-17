@@ -24,7 +24,7 @@ namespace MonsterTradingCard.RouteCommands.Cards.ShowAcquiredCardsCommand
             foreach (Card card in messageManager.GetCards(User.Token))
                 jsonString += JsonConvert.SerializeObject(card);
 
-            response.Payload = jsonString;
+            response.Payload = jsonString + "\n";
             response.StatusCode = StatusCode.Ok;
 
             return response;

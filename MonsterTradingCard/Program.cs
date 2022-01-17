@@ -11,6 +11,7 @@ using MonsterTradingCard.RouteCommands.Users.LoginCommand;
 using MonsterTradingCard.RouteCommands.Packages.CreatePackageCommand;
 using MonsterTradingCard.RouteCommands.Packages.AcquirePackageCommand;
 using MonsterTradingCard.RouteCommands.Cards.ShowAcquiredCardsCommand;
+using MonsterTradingCard.RouteCommands.Decks.ShowDeckCommand;
 using MonsterTradingCard.Models.Credentials;
 using MonsterTradingCard.Models.Card;
 using MonsterTradingCard.DAL.Database;
@@ -27,7 +28,7 @@ namespace MonsterTradingCard
         static void Main(string[] args)
         {
             var db = new Database("Host=localhost;Port=5432;Username=postgres;Password=123;Database=swe1messagedb");
-            var messageManager = new MSGMANAGER.MessageManager(db.UserRepository, db.CardRepository, db.PackageRepository);
+            var messageManager = new MSGMANAGER.MessageManager(db.UserRepository, db.CardRepository, db.PackageRepository, db.DeckRepository);
 
             var identityProvider = new MSG_ID_PROVIDER.MessageIdentityProvider(db.UserRepository);
             var routeParser = new ID_ROUTE_PARSER.IdRouteParser();
@@ -53,6 +54,7 @@ namespace MonsterTradingCard
             router.AddProtectedRoute(HttpMethod.Post, "/packages", (r, p) => new CreatePackageCommand(messageManager, Deserialize<List<Card>>(r.Payload)));
             router.AddProtectedRoute(HttpMethod.Post, "/transactions/packages", (r, p) => new AcquirePackageCommand(messageManager));
             router.AddProtectedRoute(HttpMethod.Get, "/cards", (r, p) => new ShowAcquiredCardsCommand(messageManager));
+            router.AddProtectedRoute(HttpMethod.Get, "/deck", (r, p) => new ShowDeckCommand(messageManager));
         }
 
         private static T Deserialize<T>(string payload) where T : class

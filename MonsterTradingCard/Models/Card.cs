@@ -1,5 +1,4 @@
-﻿
-namespace MonsterTradingCard.Models.Card
+﻿namespace MonsterTradingCard.Models.Card
 {
     public class Card
     {

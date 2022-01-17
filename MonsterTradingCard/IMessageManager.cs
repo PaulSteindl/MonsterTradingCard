@@ -17,5 +17,6 @@ namespace MonsterTradingCard.IMessageManager
         bool CheckCoins(string authToken);
         void AcquirePackage(Package package, string authToken);
         IEnumerable<Card> GetCards(string authToken);
+        List<Card> GetDeck(string authToken);
     }
 }
