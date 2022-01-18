@@ -1,5 +1,7 @@
 ﻿using USERREPO = MonsterTradingCard.DAL.IUserRepository;
 using MonsterTradingCard.Models.User;
+using MonsterTradingCard.Models.UserData;
+using MonsterTradingCard.Models.UserStats;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -39,5 +41,8 @@ namespace MonsterTradingCard.DAL.InMemoryUserRepository
 
         public int SelectCoinsByToken(string authToken) { return 0; }
         public void UpdateCoinsByMinus5(string authToken) { }
+        public UserData SelectUserDataByUsername(string username) { return new UserData(); }
+        public void UpdateUserDataByUsername(string username, UserData userData) { }
+        public UserStats SelectUserStatsByToken(string authToken) { return new UserStats();  }
     }
 }

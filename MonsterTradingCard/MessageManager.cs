@@ -2,15 +2,21 @@
 using MonsterTradingCard.DAL.ICardRepository;
 using MonsterTradingCard.DAL.IPackageRepository;
 using MonsterTradingCard.DAL.IDeckRepository;
+using MonsterTradingCard.DAL.IHighscoreRepository;
+using MonsterTradingCard.DAL.ITradingdealRepository;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
 using USER_NOT_FOUND = MonsterTradingCard.UserNotFoundException;
 using DUPUSER = MonsterTradingCard.DuplicateUserException;
 using DUPCARD = MonsterTradingCard.DuplicateCardException;
 using INVALIDDECK = MonsterTradingCard.DeckNot4CardsException;
 using MonsterTradingCard.Models.User;
+using MonsterTradingCard.Models.UserData;
+using MonsterTradingCard.Models.UserStats;
 using MonsterTradingCard.Models.Credentials;
 using MonsterTradingCard.Models.Package;
 using MonsterTradingCard.Models.Card;
+using MonsterTradingCard.Models.Highscore;
+using MonsterTradingCard.Models.TradingDeal;
 using System.Collections.Generic;
 using System;
 
@@ -22,13 +28,17 @@ namespace MonsterTradingCard.MessageManager
         private readonly ICardRepository cardRepository;
         private readonly IPackageRepository packageRepository;
         private readonly IDeckRepository deckRepository;
+        private readonly IHighscoreRepository highscoreRepository;
+        private readonly ITradingdealRepository tradingdealRepository;
 
-        public MessageManager(IUserRepository userRepository, ICardRepository cardRepository, IPackageRepository packageRepository, IDeckRepository deckRepository)
+        public MessageManager(IUserRepository userRepository, ICardRepository cardRepository, IPackageRepository packageRepository, IDeckRepository deckRepository, IHighscoreRepository highscoreRepository, ITradingdealRepository tradingdealRepository)
         {
             this.userRepository = userRepository;
             this.cardRepository = cardRepository;
             this.packageRepository = packageRepository;
             this.deckRepository = deckRepository;
+            this.highscoreRepository = highscoreRepository;
+            this.tradingdealRepository = tradingdealRepository;
         }
 
         public User LoginUser(Credentials credentials)
@@ -152,6 +162,46 @@ namespace MonsterTradingCard.MessageManager
         public int CreateDeck(string authToken, List<string> cardIds)
         {
             return deckRepository.InsertDeck(authToken, cardIds);
+        }
+
+        public UserData GetUserData(string username)
+        {
+            return userRepository.SelectUserDataByUsername(username);
+        }
+
+        public void UpdateUserData(string username, UserData userData)
+        {
+            userRepository.UpdateUserDataByUsername(username, userData);
+        }
+
+        public UserStats GetUserStats(string authToken)
+        {
+            return userRepository.SelectUserStatsByToken(authToken);
+        }
+
+        public IEnumerable<Highscore> GetScore()
+        {
+            return highscoreRepository.SelectHighscoreTop50();
+        }
+
+        public IEnumerable<TradingDeal> GetTradingDeals()
+        {
+            return tradingdealRepository.SelectOpenTradingdeals();
+        }
+
+        public bool CheckCardForTrade(string cardId)
+        {
+            return tradingdealRepository.SelectTradingdealByCardId(cardId) == null ? false : true;
+        }
+
+        public bool CreateTradingdeal(TradingDeal tradingDeal, string authToken)
+        {
+            return tradingdealRepository.InsertTradingdeal(tradingDeal, authToken) > 0;
+        }
+
+        public bool DeleteTradingdeal(string tradingDealId, string authToken)
+        {
+            return tradingdealRepository.DeleteTradingdealByTradingIdAndToken(tradingDealId, authToken) > 0;
         }
     }
 }

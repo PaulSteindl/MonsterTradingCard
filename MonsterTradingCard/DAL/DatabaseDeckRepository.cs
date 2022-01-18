@@ -61,7 +61,6 @@ namespace MonsterTradingCard.DAL.DatabaseDeckRepository
         private const string SelectDeckByTokenCommand = "SELECT * FROM decks WHERE token=@token";
         private const string UpdateDeckByTokenCommand = "UPDATE decks SET card1_id=@card1_id, card2_id=@card2_id, card3_id=@card3_id, card4_id=@card4_id WHERE token=@token";
         private const string InsertDeckCommand = "INSERT INTO decks(token, card1_id, card2_id, card3_id, card4_id) VALUES (@token, @card1_id, @card2_id, @card3_id, @card4_id) RETURNING deck_id";
-        //private const string DeleteDeckByToken = "DELETE FROM decks WHERE token=@token";
 
         private readonly NpgsqlConnection _connection;
 

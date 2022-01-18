@@ -1,6 +1,8 @@
 ﻿using Npgsql;
 using IUSERREPO = MonsterTradingCard.DAL.IUserRepository;
 using MonsterTradingCard.Models.User;
+using MonsterTradingCard.Models.UserData;
+using MonsterTradingCard.Models.UserStats;
 using System;
 using System.Data;
 using System.Globalization;
@@ -41,9 +43,11 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
         private const string InsertUserCommand = "INSERT INTO users(username, password, token) VALUES (@username, @password, @token)";
         private const string SelectUserByTokenCommand = "SELECT username, password FROM users WHERE token=@token";
         private const string SelectUserByCredentialsCommand = "SELECT username, password FROM users WHERE username=@username AND password=@password";
-        private const string SelectUserStatsByTokenCommand = "SELECT username, bio, image, wins, loses, winrate, coins FROM users WHERE token=@token";
         private const string SelectCoinsByTokenCommand = "SELECT coins FROM users WHERE token=@token";
         private const string UpdateCoinsByMinus5Command = "UPDATE users SET coins=coins - 5 WHERE token=@token";
+        private const string SelectUserDataByUsernameCommand = "SELECT name, bio, image FROM users WHERE username=@username";
+        private const string UpdateUserDataByUsernameCommand = "UPDATE users SET name=@name, bio=@bio, image=@image WHERE username=@username";
+        private const string SelectUserStatsByUsernameCommand = "SELECT username, wins, loses, draws, winrate FROM users WHERE token=@token";
 
         private readonly NpgsqlConnection _connection;
 
@@ -106,24 +110,6 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
             }
             return affectedRows > 0;
         }
-        
-        //public User SelectUserStatsByToken(string token)
-        //{
-        //    User user = null;
-        //    using (var cmd = new NpgsqlCommand(SelectUserStatsByTokenCommand, _connection))
-        //    {
-        //        cmd.Parameters.AddWithValue("username", username);
-        //        cmd.Parameters.AddWithValue("password", password);
-
-        //        // take the first row, if any
-        //        using var reader = cmd.ExecuteReader();
-        //        if (reader.Read())
-        //        {
-        //            user = ReadUser(reader);
-        //        }
-        //    }
-        //    return user;
-        //}
 
         public int SelectCoinsByToken(string authToken)
         {
@@ -152,6 +138,52 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
             }
         }
 
+        public UserData SelectUserDataByUsername(string username)
+        {
+            UserData userData = null;
+            using (var cmd = new NpgsqlCommand(SelectUserDataByUsernameCommand, _connection))
+            {
+                cmd.Parameters.AddWithValue("username", username);
+
+                // take the first row, if any
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    userData = ReadUserData(reader);
+                }
+            }
+            return userData;
+        }
+
+        public void UpdateUserDataByUsername(string username, UserData userData)
+        {
+            using (var cmd = new NpgsqlCommand(UpdateUserDataByUsernameCommand, _connection))
+            {
+                cmd.Parameters.AddWithValue("name", userData.Name);
+                cmd.Parameters.AddWithValue("bio", userData.Bio);
+                cmd.Parameters.AddWithValue("image", userData.Image);
+                cmd.Parameters.AddWithValue("username", username);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public UserStats SelectUserStatsByToken(string authToken)
+        {
+            UserStats userStats = null;
+            using (var cmd = new NpgsqlCommand(SelectUserStatsByUsernameCommand, _connection))
+            {
+                cmd.Parameters.AddWithValue("token", authToken);
+
+                // take the first row, if any
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    userStats = ReadUserStats(reader);
+                }
+            }
+            return userStats;
+        }
+
         private void EnsureTables()
         {
             using var cmd = new NpgsqlCommand(CreateTableCommand, _connection);
@@ -172,17 +204,44 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
         private User ReadCoins(IDataRecord record)
         {
             var user = new User
-            {
-                //Username = Convert.ToString(record["username"]),
-                //Password = Convert.ToString(record["password"]),
-                //Bio = Convert.ToString(record["bio"]),
-                //Image = Convert.ToString(record["image"]),
-                //Wins = Convert.ToInt32(record["wins"]),
-                //Loses = Convert.ToInt32(record["loses"]),
-                //Winrate = float.Parse(Convert.ToString(record["winrate"]), CultureInfo.InvariantCulture.NumberFormat),
+            {                
                 Coins = Convert.ToInt32(record["coins"])
             };
             return user;
         }
+
+        private UserData ReadUserData(IDataRecord record)
+        {
+            var userData = new UserData
+            {
+                Name = Convert.ToString(record["name"]),
+                Bio = Convert.ToString(record["bio"]),
+                Image = Convert.ToString(record["image"])
+            };
+
+            return userData;
+        }
+
+        private UserStats ReadUserStats(IDataRecord record)
+        {
+            var userData = new UserStats
+            {
+                Username = Convert.ToString(record["username"]),
+                Wins = Convert.ToInt32(record["wins"]),
+                Loses = Convert.ToInt32(record["loses"]),
+                Draws = Convert.ToInt32(record["draws"]),
+                Winrate = float.Parse(Convert.ToString(record["winrate"]), CultureInfo.InvariantCulture.NumberFormat),
+            };
+
+            return userData;
+        }
+
+        //Username = Convert.ToString(record["username"]),
+        //Password = Convert.ToString(record["password"]),
+        //Bio = Convert.ToString(record["bio"]),
+        //Image = Convert.ToString(record["image"]),
+        //Wins = Convert.ToInt32(record["wins"]),
+        //Loses = Convert.ToInt32(record["loses"]),
+        //Winrate = float.Parse(Convert.ToString(record["winrate"]), CultureInfo.InvariantCulture.NumberFormat),
     }
 }
