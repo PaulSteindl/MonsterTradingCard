@@ -2,12 +2,13 @@
 {
     public enum Species
     {
+        none,
         goblin,
-        drachen,
-        zauberer,
+        dragon,
+        wizzard,
         ork,
-        ritter,
+        knight,
         kraken,
-        elfe
+        elf
     }
 }

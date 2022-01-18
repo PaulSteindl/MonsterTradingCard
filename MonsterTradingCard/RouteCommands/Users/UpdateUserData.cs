@@ -6,14 +6,14 @@ using IMSGMANAGER = MonsterTradingCard.IMessageManager;
 using PROT_ROUTE_COM = MonsterTradingCard.RouteCommands.ProtectedRouteCommand;
 using System.Linq;
 
-namespace MonsterTradingCard.RouteCommands.Users.UpdateUserData
+namespace MonsterTradingCard.RouteCommands.Users.UpdateUserDataCommand
 {
-    class UpdateUserData : PROT_ROUTE_COM.ProtectedRouteCommand
+    class UpdateUserDataCommand : PROT_ROUTE_COM.ProtectedRouteCommand
     {
         private readonly IMSGMANAGER.IMessageManager messageManager;
         private string username { get; set; }
         private UserData userData { get; set; }
-        public UpdateUserData(IMSGMANAGER.IMessageManager messageManager, string username, UserData userData)
+        public UpdateUserDataCommand(IMSGMANAGER.IMessageManager messageManager, string username, UserData userData)
         {
             this.messageManager = messageManager;
             this.username = username;

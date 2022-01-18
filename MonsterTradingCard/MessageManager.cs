@@ -9,6 +9,7 @@ using USER_NOT_FOUND = MonsterTradingCard.UserNotFoundException;
 using DUPUSER = MonsterTradingCard.DuplicateUserException;
 using DUPCARD = MonsterTradingCard.DuplicateCardException;
 using INVALIDDECK = MonsterTradingCard.DeckNot4CardsException;
+using INVALIDDEAL = MonsterTradingCard.TradingdealDoesNotExistException;
 using MonsterTradingCard.Models.User;
 using MonsterTradingCard.Models.UserData;
 using MonsterTradingCard.Models.UserStats;
@@ -90,9 +91,9 @@ namespace MonsterTradingCard.MessageManager
             packageRepository.InsertPackage(package);
         }
 
-        public Package SelectRandomPackage()
+        public Package SelectFirstPackage()
         {
-            return packageRepository.SelectRandomPackage();
+            return packageRepository.SelectFirstPackage();
         }
 
         public bool CheckCoins(string authToken)
@@ -202,6 +203,21 @@ namespace MonsterTradingCard.MessageManager
         public bool DeleteTradingdeal(string tradingDealId, string authToken)
         {
             return tradingdealRepository.DeleteTradingdealByTradingIdAndToken(tradingDealId, authToken) > 0;
+        }
+
+        public TradingDeal CheckTradingdealExistsReturnDeal(string tradingDealId)
+        {
+            return tradingdealRepository.SelectTradingdealAndTokenByTradingId(tradingDealId) ?? throw new INVALIDDEAL.TradingdealDoesNotExistException();
+        }
+
+        public Card GetCardByIdAndToken(string cardId, string authToken)
+        {
+            return cardRepository.SelectCardByIdAndToken(cardId, authToken);
+        }
+
+        public void UpdateCardOwnerById(string cardId, string authToken)
+        {
+            cardRepository.UpdateCardOwner(cardId, authToken);
         }
     }
 }

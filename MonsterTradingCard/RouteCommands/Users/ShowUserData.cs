@@ -5,14 +5,14 @@ using IMSGMANAGER = MonsterTradingCard.IMessageManager;
 using PROT_ROUTE_COM = MonsterTradingCard.RouteCommands.ProtectedRouteCommand;
 using System.Linq;
 
-namespace MonsterTradingCard.RouteCommands.Users.ShowUserData
+namespace MonsterTradingCard.RouteCommands.Users.ShowUserDataCommand
 {
-    class ShowUserData : PROT_ROUTE_COM.ProtectedRouteCommand
+    class ShowUserDataCommand : PROT_ROUTE_COM.ProtectedRouteCommand
     {
         private readonly IMSGMANAGER.IMessageManager messageManager;
         private string username { get; set; }
 
-        public ShowUserData(IMSGMANAGER.IMessageManager messageManager, string username)
+        public ShowUserDataCommand(IMSGMANAGER.IMessageManager messageManager, string username)
         {
             this.messageManager = messageManager;
             this.username = username;

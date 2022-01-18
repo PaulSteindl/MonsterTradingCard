@@ -5,14 +5,14 @@ using MonsterTradingCard.Models.TradingDeal;
 using PROT_ROUTE_COM = MonsterTradingCard.RouteCommands.ProtectedRouteCommand;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
 
-namespace MonsterTradingCard.RouteCommands.Trading.CreateTradingDeal
+namespace MonsterTradingCard.RouteCommands.Trading.CreateTradingDealCommand
 {
-    class CreateTradingDeal : PROT_ROUTE_COM.ProtectedRouteCommand
+    class CreateTradingDealCommand : PROT_ROUTE_COM.ProtectedRouteCommand
     {
         private readonly IMSGMANAGER.IMessageManager messageManager;
         private readonly TradingDeal tradingDeal;
 
-        public CreateTradingDeal(IMSGMANAGER.IMessageManager messageManager, TradingDeal tradingDeal)
+        public CreateTradingDealCommand(IMSGMANAGER.IMessageManager messageManager, TradingDeal tradingDeal)
         {
             this.messageManager = messageManager;
             this.tradingDeal = tradingDeal;

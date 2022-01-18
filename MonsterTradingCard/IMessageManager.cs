@@ -17,7 +17,7 @@ namespace MonsterTradingCard.IMessageManager
         void AddCard(Card card);
         void CardExistence(List<Card> cards);
         void CreatePackage(List<Card> cards);
-        Package SelectRandomPackage();
+        Package SelectFirstPackage();
         bool CheckCoins(string authToken);
         void AcquirePackage(Package package, string authToken);
         IEnumerable<Card> GetCards(string authToken);
@@ -34,5 +34,8 @@ namespace MonsterTradingCard.IMessageManager
         bool CheckCardForTrade(string cardId);
         bool CreateTradingdeal(TradingDeal tradingDeal, string authToken);
         bool DeleteTradingdeal(string tradingDealId, string authToken);
+        TradingDeal CheckTradingdealExistsReturnDeal(string tradingDealId);
+        Card GetCardByIdAndToken(string cardId, string authToken);
+        void UpdateCardOwnerById(string cardId, string authToken);
     }
 }

@@ -5,7 +5,7 @@ namespace MonsterTradingCard.DAL.IPackageRepository
     public interface IPackageRepository
     {
         void InsertPackage(Package package);
-        Package SelectRandomPackage();
+        Package SelectFirstPackage();
         void UpdatePackageOwner(int packageId, string authToken);
     }
 }

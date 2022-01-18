@@ -82,7 +82,7 @@ namespace MonsterTradingCard.DAL.DatabasePackageRepository
             var result = cmd.ExecuteScalar();
         }
 
-        public Package SelectRandomPackage()
+        public Package SelectFirstPackage()
         {
             var packages = new List<Package>();
             Random random = new Random();
@@ -97,7 +97,7 @@ namespace MonsterTradingCard.DAL.DatabasePackageRepository
                 }
             }
 
-            return packages.Count > 0 ? packages[random.Next() % packages.Count] : null;
+            return packages.Count > 0 ? packages[0] : null;
         }
 
         public void UpdatePackageOwner(int packageId, string authToken)

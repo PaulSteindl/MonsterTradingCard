@@ -44,7 +44,8 @@ namespace MonsterTradingCard.DAL.DatabaseTradingdealRepository
         private const string SelectTradingdealsCommand = "SELECT * FROM tradingdeals";
         private const string SelectTradingdealByCardIdCommand = "SELECT * FROM tradingdeals WHERE cardtotrade=@card_id";
         private const string InsertTradingdealCommand = "INSERT INTO tradingdeals (trading_id, usertoken, cardtotrade, mindmg, element, cardtype, species) VALUES (@trading_id, @usertoken, @cardtotrade, @mindmg, @element, @cardtype, @species)";
-        private const string DeleteTradingdealByTradingIdAndTokenCommand = "DELETE FROM tradingdeals WHERE trading_id=@trading_id AND token=@token";
+        private const string DeleteTradingdealByTradingIdAndTokenCommand = "DELETE FROM tradingdeals WHERE trading_id=@trading_id AND usertoken=@usertoken";
+        private const string SelectTradingdealByTradingIdCommand = "SELECT * FROM tradingdeals WHERE trading_id=@trading_id";
 
         private readonly NpgsqlConnection _connection;
 
@@ -149,6 +150,24 @@ namespace MonsterTradingCard.DAL.DatabaseTradingdealRepository
             return rowsAffected;
         }
 
+        public TradingDeal SelectTradingdealAndTokenByTradingId(string tradingDealId)
+        {
+            TradingDeal tradingDeal = null;
+
+            using (var cmd = new NpgsqlCommand(SelectTradingdealByTradingIdCommand, _connection))
+            {
+                cmd.Parameters.AddWithValue("trading_id", tradingDealId);
+
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    tradingDeal = ReadTradingdealWithToken(reader);
+                }
+            }
+
+            return tradingDeal;
+        }
+
         private void EnsureTables()
         {
             using var cmd = new NpgsqlCommand(CreateTableCommand, _connection);
@@ -160,6 +179,21 @@ namespace MonsterTradingCard.DAL.DatabaseTradingdealRepository
             var tradingdeal = new TradingDeal
             {
                 Id = Convert.ToString(record["trading_id"]),
+                CardToTrade = Convert.ToString(record["cardtotrade"]),
+                MinimumDamage = record["mindmg"] is DBNull ? null : Convert.ToInt32(record["mindmg"]),
+                Element = record["element"] is DBNull ? null : (Element)Enum.Parse(typeof(Element), Convert.ToString(record["element"])),
+                Type = record["cardtype"] is DBNull ? null : (CardType)Enum.Parse(typeof(CardType), Convert.ToString(record["cardtype"])),
+                Species = record["species"] is DBNull ? null : (Species)Enum.Parse(typeof(Species), Convert.ToString(record["species"]))
+            };
+            return tradingdeal;
+        }
+
+        private TradingDeal ReadTradingdealWithToken(IDataRecord record)
+        {
+            var tradingdeal = new TradingDeal
+            {
+                Id = Convert.ToString(record["trading_id"]),
+                Usertoken = Convert.ToString(record["usertoken"]),
                 CardToTrade = Convert.ToString(record["cardtotrade"]),
                 MinimumDamage = record["mindmg"] is DBNull ? null : Convert.ToInt32(record["mindmg"]),
                 Element = record["element"] is DBNull ? null : (Element)Enum.Parse(typeof(Element), Convert.ToString(record["element"])),

@@ -3,15 +3,14 @@ using HTTPServerCore.Response.Response;
 using HTTPServerCore.Response.StatusCode;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
 using PROT_ROUTE_COM = MonsterTradingCard.RouteCommands.ProtectedRouteCommand;
-using System.Linq;
 
-namespace MonsterTradingCard.RouteCommands.Users.ShowUserStats
+namespace MonsterTradingCard.RouteCommands.Users.ShowUserStatsCommand
 {
-    class ShowUserStats : PROT_ROUTE_COM.ProtectedRouteCommand
+    class ShowUserStatsCommand : PROT_ROUTE_COM.ProtectedRouteCommand
     {
         private readonly IMSGMANAGER.IMessageManager messageManager;
 
-        public ShowUserStats(IMSGMANAGER.IMessageManager messageManager)
+        public ShowUserStatsCommand(IMSGMANAGER.IMessageManager messageManager)
         {
             this.messageManager = messageManager;
         }

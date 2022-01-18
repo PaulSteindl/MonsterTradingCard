@@ -9,5 +9,6 @@ namespace MonsterTradingCard.DAL.ITradingdealRepository
         TradingDeal SelectTradingdealByCardId(string cardId);
         int InsertTradingdeal(TradingDeal tradingDeal, string authToken);
         int DeleteTradingdealByTradingIdAndToken(string tradingDealId, string authToken);
+        TradingDeal SelectTradingdealAndTokenByTradingId(string tradingDealId);
     }
 }

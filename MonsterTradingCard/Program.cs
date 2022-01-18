@@ -8,9 +8,9 @@ using IMESSAGE_MANAGER = MonsterTradingCard.IMessageManager;
 using MSG_ID_PROVIDER = MonsterTradingCard.MessageIdentityProvider;
 using MonsterTradingCard.RouteCommands.Users.RegisterCommand;
 using MonsterTradingCard.RouteCommands.Users.LoginCommand;
-using MonsterTradingCard.RouteCommands.Users.ShowUserData;
-using MonsterTradingCard.RouteCommands.Users.UpdateUserData;
-using MonsterTradingCard.RouteCommands.Users.ShowUserStats;
+using MonsterTradingCard.RouteCommands.Users.ShowUserDataCommand;
+using MonsterTradingCard.RouteCommands.Users.UpdateUserDataCommand;
+using MonsterTradingCard.RouteCommands.Users.ShowUserStatsCommand;
 using MonsterTradingCard.RouteCommands.Packages.CreatePackageCommand;
 using MonsterTradingCard.RouteCommands.Packages.AcquirePackageCommand;
 using MonsterTradingCard.RouteCommands.Cards.ShowAcquiredCardsCommand;
@@ -18,9 +18,10 @@ using MonsterTradingCard.RouteCommands.Decks.ShowDeckCommand;
 using MonsterTradingCard.RouteCommands.Decks.ConfigureDeckCommand;
 using MonsterTradingCard.RouteCommands.Decks.ShowDeckPlainCommand;
 using MonsterTradingCard.RouteCommands.Battle.ShowScoreCommand;
-using MonsterTradingCard.RouteCommands.Trading.CreateTradingDeal;
+using MonsterTradingCard.RouteCommands.Trading.CreateTradingDealCommand;
 using MonsterTradingCard.RouteCommands.Trading.DeleteTradingDealCommand;
-using MonsterTradingCard.RouteCommands.Trading.ShowTradingDeals;
+using MonsterTradingCard.RouteCommands.Trading.ShowTradingDealsCommand;
+using MonsterTradingCard.RouteCommands.Trading.TradeCommand;
 using MonsterTradingCard.Models.Credentials;
 using MonsterTradingCard.Models.Card;
 using MonsterTradingCard.Models.UserData;
@@ -68,13 +69,14 @@ namespace MonsterTradingCard
             router.AddProtectedRoute(HttpMethod.Get, "/deck", (r, p) => new ShowDeckCommand(messageManager));
             router.AddProtectedRoute(HttpMethod.Get, "/deck\\?format=plain", (r, p) => new ShowDeckPlainCommand(messageManager));
             router.AddProtectedRoute(HttpMethod.Put, "/deck", (r, p) => new ConfigureDeckCommand(messageManager, Deserialize<List<string>>(r.Payload)));
-            router.AddProtectedRoute(HttpMethod.Get, "/users/{id}", (r, p) => new ShowUserData(messageManager, p["id"]));
-            router.AddProtectedRoute(HttpMethod.Put, "/users/{id}", (r, p) => new UpdateUserData(messageManager, p["id"], Deserialize<UserData>(r.Payload)));
-            router.AddProtectedRoute(HttpMethod.Get, "/stats", (r, p) => new ShowUserStats(messageManager));
+            router.AddProtectedRoute(HttpMethod.Get, "/users/{id}", (r, p) => new ShowUserDataCommand(messageManager, p["id"]));
+            router.AddProtectedRoute(HttpMethod.Put, "/users/{id}", (r, p) => new UpdateUserDataCommand(messageManager, p["id"], Deserialize<UserData>(r.Payload)));
+            router.AddProtectedRoute(HttpMethod.Get, "/stats", (r, p) => new ShowUserStatsCommand(messageManager));
             router.AddProtectedRoute(HttpMethod.Get, "/score", (r, p) => new ShowScoreCommand(messageManager));
-            router.AddProtectedRoute(HttpMethod.Get, "/tradings", (r, p) => new ShowTradingDeals(messageManager));
-            router.AddProtectedRoute(HttpMethod.Post, "/tradings", (r, p) => new CreateTradingDeal(messageManager, Deserialize<TradingDeal>(r.Payload)));
+            router.AddProtectedRoute(HttpMethod.Get, "/tradings", (r, p) => new ShowTradingDealsCommand(messageManager));
+            router.AddProtectedRoute(HttpMethod.Post, "/tradings", (r, p) => new CreateTradingDealCommand(messageManager, Deserialize<TradingDeal>(r.Payload)));
             router.AddProtectedRoute(HttpMethod.Delete, "/tradings/{id}", (r, p) => new DeleteTradingDealCommand(messageManager, p["id"]));
+            router.AddProtectedRoute(HttpMethod.Post, "/tradings/{id}", (r, p) => new TradeCommand(messageManager, p["id"], Deserialize<string>(r.Payload)));
         }
 
         private static T Deserialize<T>(string payload) where T : class

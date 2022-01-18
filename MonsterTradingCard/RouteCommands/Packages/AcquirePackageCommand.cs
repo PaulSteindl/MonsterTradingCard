@@ -20,7 +20,7 @@ namespace MonsterTradingCard.RouteCommands.Packages.AcquirePackageCommand
             var response = new Response();
             Package package = null;
 
-            package = messageManager.SelectRandomPackage();
+            package = messageManager.SelectFirstPackage();
 
             if(package != null)
             {
