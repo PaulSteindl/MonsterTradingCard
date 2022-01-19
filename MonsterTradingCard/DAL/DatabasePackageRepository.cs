@@ -4,6 +4,7 @@ using MonsterTradingCard.Models.Package;
 using System;
 using System.Data;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace MonsterTradingCard.DAL.DatabasePackageRepository
 {
@@ -64,10 +65,12 @@ namespace MonsterTradingCard.DAL.DatabasePackageRepository
         private const string UpdatePackageOwnerByTokenCommand = "UPDATE packages SET owner=@owner WHERE package_id=@package_id";
 
         private readonly NpgsqlConnection _connection;
+        private Mutex mDB;
 
-        public DatabasePackageRepository(NpgsqlConnection connection)
+        public DatabasePackageRepository(NpgsqlConnection connection, Mutex mDB)
         {
             _connection = connection;
+            this.mDB = mDB;
             EnsureTables();
         }
 
@@ -79,7 +82,9 @@ namespace MonsterTradingCard.DAL.DatabasePackageRepository
             cmd.Parameters.AddWithValue("card3_id", package.CardIds[2]);
             cmd.Parameters.AddWithValue("card4_id", package.CardIds[3]);
             cmd.Parameters.AddWithValue("card5_id", package.CardIds[4]);
+            mDB.WaitOne();
             var result = cmd.ExecuteScalar();
+            mDB.ReleaseMutex();
         }
 
         public Package SelectFirstPackage()
@@ -89,8 +94,10 @@ namespace MonsterTradingCard.DAL.DatabasePackageRepository
 
             using (var cmd = new NpgsqlCommand(SelectRandomPackageWithNoOwnerCommand, _connection))
             {
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
-                while(reader.Read())
+                mDB.ReleaseMutex();
+                while (reader.Read())
                 {
                     var package = ReadUnClaimedPackage(reader);
                     packages.Add(package);
@@ -105,13 +112,17 @@ namespace MonsterTradingCard.DAL.DatabasePackageRepository
             using var cmd = new NpgsqlCommand(UpdatePackageOwnerByTokenCommand, _connection);
             cmd.Parameters.AddWithValue("owner", authToken);
             cmd.Parameters.AddWithValue("package_id", packageId);
+            mDB.WaitOne();
             cmd.ExecuteNonQuery();
+            mDB.ReleaseMutex();
         }
 
         private void EnsureTables()
         {
             using var cmd = new NpgsqlCommand(CreateTableCommand, _connection);
+            mDB.WaitOne();
             cmd.ExecuteNonQuery();
+            mDB.ReleaseMutex();
         }
 
         private Package ReadClaimedPackage(IDataRecord record)

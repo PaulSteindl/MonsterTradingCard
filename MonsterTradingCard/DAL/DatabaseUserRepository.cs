@@ -6,6 +6,7 @@ using MonsterTradingCard.Models.UserStats;
 using System;
 using System.Data;
 using System.Globalization;
+using System.Threading;
 
 namespace MonsterTradingCard.DAL.DatabaseUserRepository
 {
@@ -50,10 +51,12 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
         private const string SelectUserStatsByUsernameCommand = "SELECT username, wins, loses, draws, winrate FROM users WHERE token=@token";
 
         private readonly NpgsqlConnection _connection;
+        private Mutex mDB;
 
-        public DatabaseUserRepository(NpgsqlConnection connection)
+        public DatabaseUserRepository(NpgsqlConnection connection, Mutex mDB)
         {
             _connection = connection;
+            this.mDB = mDB;
             EnsureTables();
         }
 
@@ -65,7 +68,9 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
                 cmd.Parameters.AddWithValue("token", authToken);
 
                 // take the first row, if any
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
+                mDB.ReleaseMutex();
                 if (reader.Read())
                 {
                     user = ReadUser(reader);
@@ -83,7 +88,9 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
                 cmd.Parameters.AddWithValue("password", password);
 
                 // take the first row, if any
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
+                mDB.ReleaseMutex();
                 if (reader.Read())
                 {
                     user = ReadUser(reader);
@@ -101,12 +108,17 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
                 cmd.Parameters.AddWithValue("username", user.Username);
                 cmd.Parameters.AddWithValue("password", user.Password);
                 cmd.Parameters.AddWithValue("token", user.Token);
+                mDB.WaitOne();
                 affectedRows = cmd.ExecuteNonQuery();
             }
             catch (PostgresException)
             {
                 // this might happen, if the user already exists (constraint violation)
                 // we just catch it an keep affectedRows at zero
+            }
+            finally
+            {
+                mDB.ReleaseMutex();
             }
             return affectedRows > 0;
         }
@@ -118,9 +130,10 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
             using (var cmd = new NpgsqlCommand(SelectCoinsByTokenCommand, _connection))
             {
                 cmd.Parameters.AddWithValue("token", authToken);
-
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
-                if(reader.Read())
+                mDB.ReleaseMutex();
+                if (reader.Read())
                 {
                     coins = ReadCoins(reader).Coins;
                 }
@@ -134,7 +147,9 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
             using (var cmd = new NpgsqlCommand(UpdateCoinsByMinus5Command, _connection))
             {
                 cmd.Parameters.AddWithValue("token", authToken);
+                mDB.WaitOne();
                 cmd.ExecuteNonQuery();
+                mDB.ReleaseMutex();
             }
         }
 
@@ -146,7 +161,9 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
                 cmd.Parameters.AddWithValue("username", username);
 
                 // take the first row, if any
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
+                mDB.ReleaseMutex();
                 if (reader.Read())
                 {
                     userData = ReadUserData(reader);
@@ -163,7 +180,9 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
                 cmd.Parameters.AddWithValue("bio", userData.Bio);
                 cmd.Parameters.AddWithValue("image", userData.Image);
                 cmd.Parameters.AddWithValue("username", username);
+                mDB.WaitOne();
                 cmd.ExecuteNonQuery();
+                mDB.ReleaseMutex();
             }
         }
 
@@ -175,7 +194,9 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
                 cmd.Parameters.AddWithValue("token", authToken);
 
                 // take the first row, if any
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
+                mDB.ReleaseMutex();
                 if (reader.Read())
                 {
                     userStats = ReadUserStats(reader);
@@ -187,7 +208,9 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
         private void EnsureTables()
         {
             using var cmd = new NpgsqlCommand(CreateTableCommand, _connection);
+            mDB.WaitOne();
             cmd.ExecuteNonQuery();
+            mDB.ReleaseMutex();
         }
 
         private User ReadUser(IDataRecord record)
@@ -235,13 +258,5 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
 
             return userData;
         }
-
-        //Username = Convert.ToString(record["username"]),
-        //Password = Convert.ToString(record["password"]),
-        //Bio = Convert.ToString(record["bio"]),
-        //Image = Convert.ToString(record["image"]),
-        //Wins = Convert.ToInt32(record["wins"]),
-        //Loses = Convert.ToInt32(record["loses"]),
-        //Winrate = float.Parse(Convert.ToString(record["winrate"]), CultureInfo.InvariantCulture.NumberFormat),
     }
 }

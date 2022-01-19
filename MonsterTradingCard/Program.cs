@@ -18,6 +18,7 @@ using MonsterTradingCard.RouteCommands.Decks.ShowDeckCommand;
 using MonsterTradingCard.RouteCommands.Decks.ConfigureDeckCommand;
 using MonsterTradingCard.RouteCommands.Decks.ShowDeckPlainCommand;
 using MonsterTradingCard.RouteCommands.Battle.ShowScoreCommand;
+using MonsterTradingCard.RouteCommands.Battle.BattleCommand;
 using MonsterTradingCard.RouteCommands.Trading.CreateTradingDealCommand;
 using MonsterTradingCard.RouteCommands.Trading.DeleteTradingDealCommand;
 using MonsterTradingCard.RouteCommands.Trading.ShowTradingDealsCommand;
@@ -51,8 +52,6 @@ namespace MonsterTradingCard
             var httpServer = new HttpServer(IPAddress.Any, 10001, router);
             httpServer.Start();
 
-            //Thread.CurrentThread.Join();
-
             Console.WriteLine("HI");
         }
 
@@ -77,6 +76,7 @@ namespace MonsterTradingCard
             router.AddProtectedRoute(HttpMethod.Post, "/tradings", (r, p) => new CreateTradingDealCommand(messageManager, Deserialize<TradingDeal>(r.Payload)));
             router.AddProtectedRoute(HttpMethod.Delete, "/tradings/{id}", (r, p) => new DeleteTradingDealCommand(messageManager, p["id"]));
             router.AddProtectedRoute(HttpMethod.Post, "/tradings/{id}", (r, p) => new TradeCommand(messageManager, p["id"], Deserialize<string>(r.Payload)));
+            router.AddProtectedRoute(HttpMethod.Post, "/battles", (r, p) => new BattleCommand(messageManager));
         }
 
         private static T Deserialize<T>(string payload) where T : class

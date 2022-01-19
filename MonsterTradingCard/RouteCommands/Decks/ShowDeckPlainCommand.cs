@@ -24,7 +24,7 @@ namespace MonsterTradingCard.RouteCommands.Decks.ShowDeckPlainCommand
 
             try
             {
-                foreach (Card card in messageManager.GetDeck(User.Token))
+                foreach (Card card in messageManager.GetDeckReturnCardList(User.Token))
                     responseString += card.ToString();
 
                 if (responseString == string.Empty)

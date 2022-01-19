@@ -4,6 +4,7 @@ using MonsterTradingCard.Models.Deck;
 using System;
 using System.Data;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace MonsterTradingCard.DAL.DatabaseDeckRepository
 {
@@ -63,10 +64,12 @@ namespace MonsterTradingCard.DAL.DatabaseDeckRepository
         private const string InsertDeckCommand = "INSERT INTO decks(token, card1_id, card2_id, card3_id, card4_id) VALUES (@token, @card1_id, @card2_id, @card3_id, @card4_id) RETURNING deck_id";
 
         private readonly NpgsqlConnection _connection;
+        private Mutex mDB;
 
-        public DatabaseDeckRepository(NpgsqlConnection connection)
+        public DatabaseDeckRepository(NpgsqlConnection connection, Mutex mDB)
         {
             _connection = connection;
+            this.mDB = mDB;
             EnsureTables();
         }
 
@@ -77,9 +80,10 @@ namespace MonsterTradingCard.DAL.DatabaseDeckRepository
             using (var cmd = new NpgsqlCommand(SelectDeckByTokenCommand, _connection))
             {
                 cmd.Parameters.AddWithValue("token", authToken);
-
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
-                if(reader.Read())
+                mDB.ReleaseMutex();
+                if (reader.Read())
                 {
                     deck = ReadDeck(reader);
                 }
@@ -96,7 +100,9 @@ namespace MonsterTradingCard.DAL.DatabaseDeckRepository
             cmd.Parameters.AddWithValue("card3_id", cardIds[2]);
             cmd.Parameters.AddWithValue("card4_id", cardIds[3]);
             cmd.Parameters.AddWithValue("token", authToken);
+            mDB.WaitOne();
             cmd.ExecuteNonQuery();
+            mDB.ReleaseMutex();
         }
 
         public int InsertDeck(string authToken, List<string> cardIds)
@@ -107,7 +113,9 @@ namespace MonsterTradingCard.DAL.DatabaseDeckRepository
             cmd.Parameters.AddWithValue("card2_id", cardIds[1]);
             cmd.Parameters.AddWithValue("card3_id", cardIds[2]);
             cmd.Parameters.AddWithValue("card4_id", cardIds[3]);
+            mDB.WaitOne();
             var result = cmd.ExecuteScalar();
+            mDB.ReleaseMutex();
 
             return Convert.ToInt32(result);
 
@@ -116,7 +124,9 @@ namespace MonsterTradingCard.DAL.DatabaseDeckRepository
         private void EnsureTables()
         {
             using var cmd = new NpgsqlCommand(CreateTableCommand, _connection);
+            mDB.WaitOne();
             cmd.ExecuteNonQuery();
+            mDB.ReleaseMutex();
         }
 
         private Deck ReadDeck(IDataRecord record)

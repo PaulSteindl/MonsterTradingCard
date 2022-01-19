@@ -39,7 +39,7 @@ namespace Client.Gui
 
         public void Start(HttpClient client)
         {
-            FormUrlEncodedContent requestContent;
+            //FormUrlEncodedContent requestContent;
 
             switch (StartMenu())
             {

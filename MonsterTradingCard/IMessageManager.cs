@@ -6,6 +6,7 @@ using MonsterTradingCard.Models.Card;
 using MonsterTradingCard.Models.Package;
 using MonsterTradingCard.Models.Highscore;
 using MonsterTradingCard.Models.TradingDeal;
+using MonsterTradingCard.Models.Deck;
 using System.Collections.Generic;
 
 namespace MonsterTradingCard.IMessageManager
@@ -21,7 +22,7 @@ namespace MonsterTradingCard.IMessageManager
         bool CheckCoins(string authToken);
         void AcquirePackage(Package package, string authToken);
         IEnumerable<Card> GetCards(string authToken);
-        List<Card> GetDeck(string authToken);
+        List<Card> GetDeckReturnCardList(string authToken);
         bool CheckCardAndUser(string cardId, string authToken);
         bool UserDeckExists(string authToken);
         void UpdateDeck(string authToken, List<string> cardIds);
@@ -37,5 +38,6 @@ namespace MonsterTradingCard.IMessageManager
         TradingDeal CheckTradingdealExistsReturnDeal(string tradingDealId);
         Card GetCardByIdAndToken(string cardId, string authToken);
         void UpdateCardOwnerById(string cardId, string authToken);
+        Deck GetDeck(string authToken);
     }
 }

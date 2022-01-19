@@ -4,6 +4,7 @@ using MonsterTradingCard.Models.Highscore;
 using System;
 using System.Data;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace MonsterTradingCard.DAL.DatabaseHighscoreRepository
 {
@@ -31,10 +32,12 @@ namespace MonsterTradingCard.DAL.DatabaseHighscoreRepository
         private const string SelectHighscoresTop50Command = "SELECT username, score FROM highscores ORDER BY score DESC LIMIT 50";
 
         private readonly NpgsqlConnection _connection;
+        private Mutex mDB;
 
-        public DatabaseHighscoreRepository(NpgsqlConnection connection)
+        public DatabaseHighscoreRepository(NpgsqlConnection connection, Mutex mDB)
         {
             _connection = connection;
+            this.mDB = mDB;
             EnsureTables();
         }
 
@@ -44,7 +47,9 @@ namespace MonsterTradingCard.DAL.DatabaseHighscoreRepository
 
             using (var cmd = new NpgsqlCommand(SelectHighscoresTop50Command, _connection))
             {
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
+                mDB.ReleaseMutex();
                 while (reader.Read())
                 {
                     var card = ReadHighscore(reader);
@@ -57,7 +62,9 @@ namespace MonsterTradingCard.DAL.DatabaseHighscoreRepository
         private void EnsureTables()
         {
             using var cmd = new NpgsqlCommand(CreateTableCommand, _connection);
+            mDB.WaitOne();
             cmd.ExecuteNonQuery();
+            mDB.ReleaseMutex();
         }
 
         private Highscore ReadHighscore(IDataRecord record)

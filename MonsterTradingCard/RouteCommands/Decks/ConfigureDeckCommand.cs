@@ -34,7 +34,7 @@ namespace MonsterTradingCard.RouteCommands.Decks.ConfigureDeckCommand
                             throw new NOUSERCARD.NoCardUserCombinationException();
 
                     foreach (string cardId in cardIds)
-                        if (!messageManager.CheckCardForTrade(cardId))
+                        if (messageManager.CheckCardForTrade(cardId))
                             throw new CARDTRADE.CardIsAvailabelToTrade(cardId);
 
                     if (messageManager.UserDeckExists(User.Token))

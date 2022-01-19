@@ -7,6 +7,7 @@ using MonsterTradingCard.Models.Enums.CardType;
 using System;
 using System.Data;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace MonsterTradingCard.DAL.DatabaseTradingdealRepository
 {
@@ -48,10 +49,12 @@ namespace MonsterTradingCard.DAL.DatabaseTradingdealRepository
         private const string SelectTradingdealByTradingIdCommand = "SELECT * FROM tradingdeals WHERE trading_id=@trading_id";
 
         private readonly NpgsqlConnection _connection;
+        private Mutex mDB;
 
-        public DatabaseTradingdealRepository(NpgsqlConnection connection)
+        public DatabaseTradingdealRepository(NpgsqlConnection connection, Mutex mDB)
         {
             _connection = connection;
+            this.mDB = mDB;
             EnsureTables();
         }
 
@@ -63,7 +66,9 @@ namespace MonsterTradingCard.DAL.DatabaseTradingdealRepository
             {
 
                 // take the first row, if any
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
+                mDB.ReleaseMutex();
                 while (reader.Read())
                 {
                     var tradingDeal = ReadTradingdeal(reader);
@@ -80,8 +85,9 @@ namespace MonsterTradingCard.DAL.DatabaseTradingdealRepository
             using (var cmd = new NpgsqlCommand(SelectTradingdealByCardIdCommand, _connection))
             {
                 cmd.Parameters.AddWithValue("card_id", cardId);
-
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
+                mDB.ReleaseMutex();
                 if (reader.Read())
                 {
                     tradingDeal = ReadTradingdeal(reader);
@@ -121,13 +127,18 @@ namespace MonsterTradingCard.DAL.DatabaseTradingdealRepository
                     cmd.Parameters.AddWithValue("species", tradingDeal.Species);
                 else
                     cmd.Parameters.AddWithValue("species", DBNull.Value);
-
+                mDB.WaitOne();
                 affectedRows = cmd.ExecuteNonQuery();
             }
             catch (PostgresException)
             {
 
             }
+            finally
+            {
+                mDB.ReleaseMutex();
+            }
+
             return affectedRows;
         }
 
@@ -140,11 +151,16 @@ namespace MonsterTradingCard.DAL.DatabaseTradingdealRepository
                 var cmd = new NpgsqlCommand(DeleteTradingdealByTradingIdAndTokenCommand, _connection);
                 cmd.Parameters.AddWithValue("trading_id", tradingDealId);
                 cmd.Parameters.AddWithValue("usertoken", authToken);
+                mDB.WaitOne();
                 rowsAffected = cmd.ExecuteNonQuery();
             }
             catch (PostgresException)
             {
 
+            }
+            finally
+            {
+                mDB.ReleaseMutex();
             }
 
             return rowsAffected;
@@ -157,8 +173,9 @@ namespace MonsterTradingCard.DAL.DatabaseTradingdealRepository
             using (var cmd = new NpgsqlCommand(SelectTradingdealByTradingIdCommand, _connection))
             {
                 cmd.Parameters.AddWithValue("trading_id", tradingDealId);
-
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
+                mDB.ReleaseMutex();
                 if (reader.Read())
                 {
                     tradingDeal = ReadTradingdealWithToken(reader);
@@ -171,7 +188,9 @@ namespace MonsterTradingCard.DAL.DatabaseTradingdealRepository
         private void EnsureTables()
         {
             using var cmd = new NpgsqlCommand(CreateTableCommand, _connection);
+            mDB.WaitOne();
             cmd.ExecuteNonQuery();
+            mDB.ReleaseMutex();
         }
 
         private TradingDeal ReadTradingdeal(IDataRecord record)

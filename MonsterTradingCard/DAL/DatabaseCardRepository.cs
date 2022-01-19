@@ -4,6 +4,7 @@ using MonsterTradingCard.Models.Card;
 using System;
 using System.Data;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace MonsterTradingCard.DAL.DatabaseCardRepository
 {
@@ -38,14 +39,16 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
         private const string SelectCardByIdAndTokenCommand = "SELECT * FROM cards WHERE card_id=@card_id AND token=@token";
 
         private readonly NpgsqlConnection _connection;
+        private Mutex mDB;
 
-        public DatabaseCardRepository(NpgsqlConnection connection)
+        public DatabaseCardRepository(NpgsqlConnection connection, Mutex mDB)
         {
             _connection = connection;
+            this.mDB = mDB;
             EnsureTables();
         }
 
-        public IEnumerable<Card> GetCardsByToken(string token)
+        public IEnumerable<Card> SelectCardsByToken(string token)
         {
             var cards = new List<Card>();
 
@@ -54,7 +57,9 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
                 cmd.Parameters.AddWithValue("token", token);
 
                 // take the first row, if any
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
+                mDB.ReleaseMutex();
                 while (reader.Read())
                 {
                     var card = ReadCard(reader);
@@ -73,11 +78,16 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
                 cmd.Parameters.AddWithValue("card_id", card.Id);
                 cmd.Parameters.AddWithValue("name", card.Name);
                 cmd.Parameters.AddWithValue("dmg", card.Damage);
+                mDB.WaitOne();
                 affectedRows = cmd.ExecuteNonQuery();
             }
             catch (PostgresException)
             {
 
+            }
+            finally
+            {
+                mDB.ReleaseMutex();
             }
             return affectedRows > 0;
         }
@@ -89,9 +99,10 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
             using (var cmd = new NpgsqlCommand(SelectCardByIdCommand, _connection))
             {
                 cmd.Parameters.AddWithValue("card_id", cardId);
-
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
-                if(reader.Read())
+                mDB.ReleaseMutex();
+                if (reader.Read())
                 {
                     card = ReadCard(reader);
                 }
@@ -104,7 +115,9 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
             using var cmd = new NpgsqlCommand(UpdateCardOwnerByTokenCommand, _connection);
             cmd.Parameters.AddWithValue("token", authToken);
             cmd.Parameters.AddWithValue("card_id", cardId);
+            mDB.WaitOne();
             cmd.ExecuteNonQuery();
+            mDB.ReleaseMutex();
         }
 
         public Card SelectCardByIdAndToken(string cardId, string authToken)
@@ -115,8 +128,9 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
             {
                 cmd.Parameters.AddWithValue("card_id", cardId);
                 cmd.Parameters.AddWithValue("token", authToken);
-
+                mDB.WaitOne();
                 using var reader = cmd.ExecuteReader();
+                mDB.ReleaseMutex();
                 if (reader.Read())
                 {
                     card = ReadCard(reader);
@@ -128,7 +142,9 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
         private void EnsureTables()
         {
             using var cmd = new NpgsqlCommand(CreateTableCommand, _connection);
+            mDB.WaitOne();
             cmd.ExecuteNonQuery();
+            mDB.ReleaseMutex();
         }
 
         private Card ReadCard(IDataRecord record)

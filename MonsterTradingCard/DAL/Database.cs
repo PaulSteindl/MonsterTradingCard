@@ -12,6 +12,7 @@ using DATA_PACK_REPO = MonsterTradingCard.DAL.DatabasePackageRepository;
 using DATA_DECK_REPO = MonsterTradingCard.DAL.DatabaseDeckRepository;
 using DATA_SCORE_REPO = MonsterTradingCard.DAL.DatabaseHighscoreRepository;
 using DATA_TRADE_REPO = MonsterTradingCard.DAL.DatabaseTradingdealRepository;
+using System.Threading;
 
 namespace MonsterTradingCard.DAL.Database
 {
@@ -24,6 +25,7 @@ namespace MonsterTradingCard.DAL.Database
         public IDECK.IDeckRepository DeckRepository { get; private set; }
         public ISCORE.IHighscoreRepository HighscoreRepositroy { get; private set; }
         public ITRADE.ITradingdealRepository TradingdealRepository { get; private set; }
+        private static Mutex mDB = new();
 
         public Database(string connectionString)
         {
@@ -34,12 +36,12 @@ namespace MonsterTradingCard.DAL.Database
 
                 // first users, then messages
                 // we need this special order since messages has a foreign key to users
-                UserRepository = new DATA_USER_REPO.DatabaseUserRepository(_connection);
-                CardRepository = new DATA_CARD_REPO.DatabaseCardRepository(_connection);
-                PackageRepository = new DATA_PACK_REPO.DatabasePackageRepository(_connection);
-                DeckRepository = new DATA_DECK_REPO.DatabaseDeckRepository(_connection);
-                HighscoreRepositroy = new DATA_SCORE_REPO.DatabaseHighscoreRepository(_connection);
-                TradingdealRepository = new DATA_TRADE_REPO.DatabaseTradingdealRepository(_connection);
+                UserRepository = new DATA_USER_REPO.DatabaseUserRepository(_connection, mDB);
+                CardRepository = new DATA_CARD_REPO.DatabaseCardRepository(_connection, mDB);
+                PackageRepository = new DATA_PACK_REPO.DatabasePackageRepository(_connection, mDB);
+                DeckRepository = new DATA_DECK_REPO.DatabaseDeckRepository(_connection, mDB);
+                HighscoreRepositroy = new DATA_SCORE_REPO.DatabaseHighscoreRepository(_connection, mDB);
+                TradingdealRepository = new DATA_TRADE_REPO.DatabaseTradingdealRepository(_connection, mDB);
             }
             catch (NpgsqlException e)
             {

@@ -18,6 +18,7 @@ using MonsterTradingCard.Models.Package;
 using MonsterTradingCard.Models.Card;
 using MonsterTradingCard.Models.Highscore;
 using MonsterTradingCard.Models.TradingDeal;
+using MonsterTradingCard.Models.Deck;
 using System.Collections.Generic;
 using System;
 
@@ -122,10 +123,10 @@ namespace MonsterTradingCard.MessageManager
 
         public IEnumerable<Card> GetCards(string authToken)
         {
-            return cardRepository.GetCardsByToken(authToken);
+            return cardRepository.SelectCardsByToken(authToken);
         }
 
-        public List<Card> GetDeck(string authToken)
+        public List<Card> GetDeckReturnCardList(string authToken)
         {
             var deck = deckRepository.SelectDeckByToken(authToken);
             var cardList = new List<Card>();
@@ -218,6 +219,22 @@ namespace MonsterTradingCard.MessageManager
         public void UpdateCardOwnerById(string cardId, string authToken)
         {
             cardRepository.UpdateCardOwner(cardId, authToken);
+        }
+
+        public Deck GetDeck(string authToken)
+        {
+            var deck = deckRepository.SelectDeckByToken(authToken);
+
+            if (deck != null && deck.CardIds.Count == 4)
+            {
+                return deck;
+            }
+            else if (deck == null)
+            {
+                return deck;
+            }
+            else
+                throw new INVALIDDECK.DeckNot4CardsException();
         }
     }
 }

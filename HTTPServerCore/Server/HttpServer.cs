@@ -8,6 +8,7 @@ using HTTPServerCore.Routing.IRouter;
 using HTTPServerCore.Client.IClient;
 using System.Net;
 using System;
+using System.Threading.Tasks;
 
 namespace HTTPServerCore.Server.HttpServer
 {
@@ -33,7 +34,7 @@ namespace HTTPServerCore.Server.HttpServer
             while (isListening)
             {
                 var client = listener.AcceptClient();
-                HandleClient(client);
+                Task.Run(() => HandleClient(client));
             }
         }
 
@@ -45,6 +46,7 @@ namespace HTTPServerCore.Server.HttpServer
 
         private void HandleClient(IClient client)
         {
+            Console.WriteLine($"Client wure akzeptiert");
             var request = client.ReceiveRequest();
 
             RESPONSE.Response response;
@@ -73,6 +75,7 @@ namespace HTTPServerCore.Server.HttpServer
             }
 
             client.SendResponse(response);
+            Console.WriteLine($"Client wure abgewickelt");
         }
     }
 }

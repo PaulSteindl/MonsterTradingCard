@@ -24,7 +24,7 @@ namespace MonsterTradingCard.RouteCommands.Decks.ShowDeckCommand
 
             try
             {
-                foreach (Card card in messageManager.GetDeck(User.Token))
+                foreach (Card card in messageManager.GetDeckReturnCardList(User.Token))
                     jsonString += JsonConvert.SerializeObject(card);
 
                 if (jsonString == string.Empty)
