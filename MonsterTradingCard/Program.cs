@@ -51,8 +51,6 @@ namespace MonsterTradingCard
 
             var httpServer = new HttpServer(IPAddress.Any, 10001, router);
             httpServer.Start();
-
-            Console.WriteLine("HI");
         }
 
         private static void RegisterRoutes(Router router, IMESSAGE_MANAGER.IMessageManager messageManager)
