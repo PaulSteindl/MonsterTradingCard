@@ -27,7 +27,6 @@ namespace MonsterTradingCard.RouteCommands.Battle.BattleCommand
 
         public override Response Execute()
         {
-            var response = new Response();
             Deck playerDeck;
 
             try
