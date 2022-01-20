@@ -4,6 +4,7 @@ using MonsterTradingCard.Models.FightLog;
 using MonsterTradingCard.Models.Round;
 using DECKINVALID = MonsterTradingCard.Exceptions.DeckNot4CardsException;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
+using IBATTLEMANAGER = MonsterTradingCard.IBattleManager;
 using MonsterTradingCard.Models.Enums.CardType;
 using MonsterTradingCard.Models.Enums.Element;
 using MonsterTradingCard.Models.Enums.CardEffect;
@@ -14,7 +15,7 @@ using System;
 
 namespace MonsterTradingCard.BattleManager
 {
-    public class BattleManager
+    public class BattleManager : IBATTLEMANAGER.IBattleManager
     {
         private readonly IMSGMANAGER.IMessageManager messageManager;
         private List<Card> player = new List<Card>();
