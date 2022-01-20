@@ -39,5 +39,8 @@ namespace MonsterTradingCard.IMessageManager
         Card GetCardByIdAndToken(string cardId, string authToken);
         void UpdateCardOwnerById(string cardId, string authToken);
         Deck GetDeck(string authToken);
+        void UpdateStatsScoreWinner(string authToken, string username);
+        void UpdateStatsLoser(string authToken);
+        void UpdateStatsDraw(string authToken);
     }
 }

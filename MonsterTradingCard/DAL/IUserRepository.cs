@@ -14,5 +14,9 @@ namespace MonsterTradingCard.DAL.IUserRepository
         UserData SelectUserDataByUsername(string username);
         void UpdateUserDataByUsername(string username, UserData userData);
         UserStats SelectUserStatsByToken(string authToken);
+        int UpdateStatsWinnerByToken(string authToken);
+        int UpdateStatsLoserByToken(string authToken);
+        int UpdateStatsDrawByToken(string authToken);
+        void TruncateAllAndRestartId(string authToken);
     }
 }

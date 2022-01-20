@@ -3,7 +3,7 @@ using CARD = MonsterTradingCard.Models.Card;
 
 namespace MonsterTradingCard.Models.RoundDetailPlayer
 {
-    class RoundDetailPlayer
+    public class RoundDetailPlayer
     {
         public string Username { get; set; }
         public CARD.Card Card { get; set; }

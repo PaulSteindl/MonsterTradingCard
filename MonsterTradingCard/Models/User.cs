@@ -10,6 +10,8 @@ namespace MonsterTradingCard.Models.User
         public string Image { get; set; }
         public int Wins { get; set; }
         public int Loses { get; set; }
+        public int Draws { get; set; }
+        public int Elo { get; set; }
         public float Winrate { get; set; }
         public int Coins { get; set; }
 

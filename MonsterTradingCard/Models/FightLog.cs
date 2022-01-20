@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MonsterTradingCard.Models.FightLog
 {
-    class FightLog
+    public class FightLog
     {
         public string Winner { get; set; }
         public string Loser { get; set; }

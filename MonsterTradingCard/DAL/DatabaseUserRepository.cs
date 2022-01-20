@@ -24,7 +24,6 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
                                                         image    text    default '-.-'::text not null,
                                                         wins     integer default 0           not null,
                                                         loses    integer default 0           not null,
-                                                        winrate  real    default 0           not null,
                                                         coins    integer default 20          not null
                                                     );
 
@@ -41,6 +40,7 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
                                                         on users (username);
                                                     ";
 
+        private const string TruncateAllAndRestartIdCommand = "TRUNCATE users, cards, decks, highscores, packages, tradingdeals RESTART IDENTITY;";
         private const string InsertUserCommand = "INSERT INTO users(username, password, token) VALUES (@username, @password, @token)";
         private const string SelectUserByTokenCommand = "SELECT username, password FROM users WHERE token=@token";
         private const string SelectUserByCredentialsCommand = "SELECT username, password FROM users WHERE username=@username AND password=@password";
@@ -48,7 +48,10 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
         private const string UpdateCoinsByMinus5Command = "UPDATE users SET coins=coins - 5 WHERE token=@token";
         private const string SelectUserDataByUsernameCommand = "SELECT name, bio, image FROM users WHERE username=@username";
         private const string UpdateUserDataByUsernameCommand = "UPDATE users SET name=@name, bio=@bio, image=@image WHERE username=@username";
-        private const string SelectUserStatsByUsernameCommand = "SELECT username, wins, loses, draws, winrate FROM users WHERE token=@token";
+        private const string SelectUserStatsByUsernameCommand = "SELECT username, wins, loses, draws, elo FROM users WHERE token=@token";
+        private const string UpdateStatsWinnerByTokenCommand = "UPDATE users SET wins=wins + 1, elo=elo + 3 WHERE token=@token";
+        private const string UpdateStatsLoserByTokenCommand = "UPDATE users SET loses=loses + 1, elo=elo - 5 WHERE token=@token";
+        private const string UpdateStatsDrawByTokenCommand = "UPDATE users SET draws=draws + 1 WHERE token=@token";
 
         private readonly NpgsqlConnection _connection;
         private Mutex mDB;
@@ -58,6 +61,19 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
             _connection = connection;
             this.mDB = mDB;
             EnsureTables();
+        }
+
+        public void TruncateAllAndRestartId(string authToken)
+        {
+            if (authToken == "fYyhAF4Lof#J8zbxfYcCGUDO2IpYy?dkH&1")
+            {
+                using (var cmd = new NpgsqlCommand(TruncateAllAndRestartIdCommand, _connection))
+                {
+                    mDB.WaitOne();
+                    cmd.ExecuteNonQuery();
+                    mDB.ReleaseMutex();
+                }
+            }
         }
 
         public User GetUserByAuthToken(string authToken)
@@ -205,6 +221,72 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
             return userStats;
         }
 
+        public int UpdateStatsWinnerByToken(string authToken)
+        {
+            int affectedRows = 0;
+
+            try
+            {
+                using var cmd = new NpgsqlCommand(UpdateStatsWinnerByTokenCommand, _connection);
+                cmd.Parameters.AddWithValue("token", authToken);
+                mDB.WaitOne();
+                affectedRows = cmd.ExecuteNonQuery();
+            }
+            catch (PostgresException)
+            {
+
+            }
+            finally
+            {
+                mDB.ReleaseMutex();
+            }
+            return affectedRows;
+        }
+
+        public int UpdateStatsLoserByToken(string authToken)
+        {
+            int affectedRows = 0;
+
+            try
+            {
+                using var cmd = new NpgsqlCommand(UpdateStatsLoserByTokenCommand, _connection);
+                cmd.Parameters.AddWithValue("token", authToken);
+                mDB.WaitOne();
+                affectedRows = cmd.ExecuteNonQuery();
+            }
+            catch (PostgresException)
+            {
+
+            }
+            finally
+            {
+                mDB.ReleaseMutex();
+            }
+            return affectedRows;
+        }
+
+        public int UpdateStatsDrawByToken(string authToken)
+        {
+            int affectedRows = 0;
+
+            try
+            {
+                using var cmd = new NpgsqlCommand(UpdateStatsDrawByTokenCommand, _connection);
+                cmd.Parameters.AddWithValue("token", authToken);
+                mDB.WaitOne();
+                affectedRows = cmd.ExecuteNonQuery();
+            }
+            catch (PostgresException)
+            {
+
+            }
+            finally
+            {
+                mDB.ReleaseMutex();
+            }
+            return affectedRows;
+        }
+
         private void EnsureTables()
         {
             using var cmd = new NpgsqlCommand(CreateTableCommand, _connection);
@@ -253,7 +335,7 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
                 Wins = Convert.ToInt32(record["wins"]),
                 Loses = Convert.ToInt32(record["loses"]),
                 Draws = Convert.ToInt32(record["draws"]),
-                Winrate = float.Parse(Convert.ToString(record["winrate"]), CultureInfo.InvariantCulture.NumberFormat),
+                Elo = Convert.ToInt32(record["elo"])
             };
 
             return userData;

@@ -3,7 +3,7 @@
 namespace MonsterTradingCard.TradingdealDoesNotExistException
 {
     [Serializable]
-    internal class TradingdealDoesNotExistException : Exception
+    public class TradingdealDoesNotExistException : Exception
     {
         public TradingdealDoesNotExistException()
         {

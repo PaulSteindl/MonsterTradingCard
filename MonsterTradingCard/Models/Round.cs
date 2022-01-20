@@ -3,7 +3,7 @@ using DETAIL = MonsterTradingCard.Models.RoundDetailPlayer;
 
 namespace MonsterTradingCard.Models.Round
 {
-    class Round
+    public class Round
     {
         public int RoundNumber { get; set; }
         public string RoundWinner { get; set; }

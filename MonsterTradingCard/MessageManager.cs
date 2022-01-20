@@ -10,6 +10,7 @@ using DUPUSER = MonsterTradingCard.DuplicateUserException;
 using DUPCARD = MonsterTradingCard.DuplicateCardException;
 using INVALIDDECK = MonsterTradingCard.DeckNot4CardsException;
 using INVALIDDEAL = MonsterTradingCard.TradingdealDoesNotExistException;
+using NOSTATSUPDATE = MonsterTradingCard.NoStatsUpdateException;
 using MonsterTradingCard.Models.User;
 using MonsterTradingCard.Models.UserData;
 using MonsterTradingCard.Models.UserStats;
@@ -109,7 +110,7 @@ namespace MonsterTradingCard.MessageManager
         public void CardExistence(List<Card> cards)
         {
             foreach (Card card in cards)
-                if (cardRepository.SelectCardById(card.Id) == null)
+                if (cardRepository.SelectCardById(card.Id) != null)
                     throw new DUPCARD.DuplicateCardException(card.Id);
         }
 
@@ -235,6 +236,37 @@ namespace MonsterTradingCard.MessageManager
             }
             else
                 throw new INVALIDDECK.DeckNot4CardsException();
+        }
+
+        public void UpdateStatsScoreWinner(string authToken, string username)
+        {
+            if (userRepository.UpdateStatsWinnerByToken(authToken) > 0)
+            {
+                if (highscoreRepository.SelectHighscoreByUsername(authToken) != null)
+                {
+                    if (highscoreRepository.UpdateWinByOneByUsername(authToken) <= 0)
+                        throw new NOSTATSUPDATE.NoStatsUpdateException();
+                }
+                else
+                {
+                    if (highscoreRepository.InsertWinOneByUsername(authToken) <= 0)
+                        throw new NOSTATSUPDATE.NoStatsUpdateException();
+                }
+            }
+            else
+                throw new NOSTATSUPDATE.NoStatsUpdateException();
+        }
+
+        public void UpdateStatsLoser(string authToken)
+        {
+            if (userRepository.UpdateStatsLoserByToken(authToken) <= 0)
+                throw new NOSTATSUPDATE.NoStatsUpdateException();
+        }
+
+        public void UpdateStatsDraw(string authToken)
+        {
+            if (userRepository.UpdateStatsDrawByToken(authToken) <= 0)
+                throw new NOSTATSUPDATE.NoStatsUpdateException();
         }
     }
 }

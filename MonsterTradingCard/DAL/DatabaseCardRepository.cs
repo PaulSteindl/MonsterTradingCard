@@ -94,7 +94,7 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
 
         public Card SelectCardById(string cardId)
         {
-            var card = new Card();
+            Card card = null;
 
             using (var cmd = new NpgsqlCommand(SelectCardByIdCommand, _connection))
             {

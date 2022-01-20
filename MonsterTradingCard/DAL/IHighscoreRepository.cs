@@ -5,6 +5,10 @@ namespace MonsterTradingCard.DAL.IHighscoreRepository
 {
     public interface IHighscoreRepository
     {
-        public IEnumerable<Highscore> SelectHighscoreTop50();
+        IEnumerable<Highscore> SelectHighscoreTop50();
+        Highscore SelectHighscoreByUsername(string username);
+        int UpdateWinByOneByUsername(string username);
+        int InsertWinOneByUsername(string username);
+
     }
 }

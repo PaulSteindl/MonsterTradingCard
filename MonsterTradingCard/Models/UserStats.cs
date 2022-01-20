@@ -6,6 +6,6 @@
         public int Wins { get; set; }
         public int Loses { get; set; }
         public int Draws { get; set; }
-        public float Winrate { get; set; }
+        public int Elo { get; set; }
     }
 }

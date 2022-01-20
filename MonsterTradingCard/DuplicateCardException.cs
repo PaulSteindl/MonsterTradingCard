@@ -2,7 +2,7 @@
 
 namespace MonsterTradingCard.DuplicateCardException
 {
-    internal class DuplicateCardException : Exception
+    public class DuplicateCardException : Exception
     {
         public DuplicateCardException()
         {

@@ -12,9 +12,9 @@ using System.Collections.Generic;
 using MonsterTradingCard.Models.RoundDetailPlayer;
 using System;
 
-namespace MonsterTradingCard
+namespace MonsterTradingCard.BattleManager
 {
-    class BattleManager
+    public class BattleManager
     {
         private readonly IMSGMANAGER.IMessageManager messageManager;
         private List<Card> player = new List<Card>();
@@ -119,31 +119,40 @@ namespace MonsterTradingCard
             //set total amount of numbers
             log.RoundCount = (roundNr == 101 ? 100 : roundNr);
 
-            //set final winner
+            //set final winner and update Elo + Stats
             if (player.Count <= 0)
             {
                 log.Winner = opponentUsername;
                 log.Loser = playerUsername;
                 log.Draw = true;
+
+                messageManager.UpdateStatsScoreWinner(log.Decks[1].Token, opponentUsername);
+                messageManager.UpdateStatsLoser(log.Decks[0].Token);
             }
             else if(opponent.Count <= 0)
             {
                 log.Winner = playerUsername;
                 log.Loser = opponentUsername;
                 log.Draw = true;
+
+                messageManager.UpdateStatsScoreWinner(log.Decks[0].Token, playerUsername);
+                messageManager.UpdateStatsLoser(log.Decks[1].Token);
             }
             else
             {
                 log.Winner = "none";
                 log.Loser = "none";
                 log.Draw = true;
+
+                messageManager.UpdateStatsDraw(log.Decks[0].Token);
+                messageManager.UpdateStatsDraw(log.Decks[1].Token);
             }
             return log;
         }
 
-        private void SetWinnerLoserDraw(RoundDetailPlayer player, RoundDetailPlayer opponent, Round round)
+        public void SetWinnerLoserDraw(RoundDetailPlayer player, RoundDetailPlayer opponent, Round round)
         {
-            if(player.CardEffect != CardEffect.none)
+            if((player.CardEffect != CardEffect.none && (player.CardEffect == CardEffect.scared || player.CardEffect == CardEffect.controlled || player.CardEffect == CardEffect.drowned)) || (opponent.CardEffect != CardEffect.none && (opponent.CardEffect == CardEffect.evade || opponent.CardEffect == CardEffect.immune)))
             {
                 round.RoundWinner = opponent.Username;
                 round.RoundLoser = player.Username;
@@ -152,8 +161,8 @@ namespace MonsterTradingCard
                 this.opponent.Add(player.Card);
                 this.player.Remove(player.Card);
             }
-            else if(opponent.CardEffect != CardEffect.none)
-            {
+            else if ((opponent.CardEffect != CardEffect.none && (opponent.CardEffect == CardEffect.scared || opponent.CardEffect == CardEffect.controlled || opponent.CardEffect == CardEffect.drowned)) || (player.CardEffect != CardEffect.none && (player.CardEffect == CardEffect.evade || player.CardEffect == CardEffect.immune)))
+                {
                 round.RoundWinner = player.Username;
                 round.RoundLoser = opponent.Username;
                 round.RoundDraw = false;
@@ -190,7 +199,7 @@ namespace MonsterTradingCard
             }
         }
 
-        private List<float> ElementMultCalc(Element playerElement, Element opponentElement)
+        public List<float> ElementMultCalc(Element playerElement, Element opponentElement)
         {
             if (opponentElement == Element_Dictionary[playerElement])
                 return new List<float> { 2f, 0.5f };
@@ -200,7 +209,7 @@ namespace MonsterTradingCard
                 return new List<float> { 1, 1 };
         }
 
-        private CardEffect[] CheckCardEffect(Card playerCard, Card opponentCard)
+        public CardEffect[] CheckCardEffect(Card playerCard, Card opponentCard)
         {
             int j = 1;
             var cardArray = new Card[2];
@@ -240,7 +249,7 @@ namespace MonsterTradingCard
                         break;
 
                     case Species.kraken:
-                        if (cardArray[i].CardType == CardType.spell)
+                        if (cardArray[j].CardType == CardType.spell)
                         {
                             cardEffects[i] = CardEffect.immune;
                             cardEffects[j] = CardEffect.none;
@@ -264,7 +273,7 @@ namespace MonsterTradingCard
             return cardEffects;
         }
 
-        private List<Card> SetupCards(Deck deck)
+        public List<Card> SetupCards(Deck deck)
         {
             var cards = new List<Card>();
 

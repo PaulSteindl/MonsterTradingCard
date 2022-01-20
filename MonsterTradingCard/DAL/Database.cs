@@ -16,7 +16,7 @@ using System.Threading;
 
 namespace MonsterTradingCard.DAL.Database
 {
-    class Database
+    public class Database
     {
         private readonly NpgsqlConnection _connection;
         public IUSER.IUserRepository UserRepository { get; private set; }

@@ -30,6 +30,9 @@ namespace MonsterTradingCard.DAL.DatabaseHighscoreRepository
                                                     ";
 
         private const string SelectHighscoresTop50Command = "SELECT username, score FROM highscores ORDER BY score DESC LIMIT 50";
+        private const string SelectHighscoreByTokenCommand = "SELECT username, score FROM highscores WHERE username=@username";
+        private const string UpdateWinByOneByTokenCommand = "UPDATE highscores SET score=score + 1 WHERE username=@username";
+        private const string InsertWinOneByTokenCommand = "INSERT INTO highscores(username) VALUES (@username)";
 
         private readonly NpgsqlConnection _connection;
         private Mutex mDB;
@@ -57,6 +60,68 @@ namespace MonsterTradingCard.DAL.DatabaseHighscoreRepository
                 }
             }
             return highscore;
+        }
+
+        public Highscore SelectHighscoreByUsername(string username)
+        {
+            Highscore userStats = null;
+            using (var cmd = new NpgsqlCommand(SelectHighscoreByTokenCommand, _connection))
+            {
+                cmd.Parameters.AddWithValue("username", username);
+
+                // take the first row, if any
+                mDB.WaitOne();
+                using var reader = cmd.ExecuteReader();
+                mDB.ReleaseMutex();
+                if (reader.Read())
+                {
+                    userStats = ReadHighscore(reader);
+                }
+            }
+            return userStats;
+        }
+
+        public int UpdateWinByOneByUsername(string username)
+        {
+            int affectedRows = 0;
+
+            try
+            {
+                using var cmd = new NpgsqlCommand(UpdateWinByOneByTokenCommand, _connection);
+                cmd.Parameters.AddWithValue("username", username);
+                mDB.WaitOne();
+                affectedRows = cmd.ExecuteNonQuery();
+            }
+            catch (PostgresException)
+            {
+
+            }
+            finally
+            {
+                mDB.ReleaseMutex();
+            }
+            return affectedRows;
+        }
+
+        public int InsertWinOneByUsername(string username)
+        {
+            var affectedRows = 0;
+            try
+            {
+                using var cmd = new NpgsqlCommand(InsertWinOneByTokenCommand, _connection);
+                cmd.Parameters.AddWithValue("username", username);
+;
+                mDB.WaitOne();
+                affectedRows = cmd.ExecuteNonQuery();
+            }
+            catch (PostgresException)
+            {
+            }
+            finally
+            {
+                mDB.ReleaseMutex();
+            }
+            return affectedRows;
         }
 
         private void EnsureTables()
