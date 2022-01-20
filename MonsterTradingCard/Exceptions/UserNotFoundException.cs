@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MonsterTradingCard.UserNotFoundException
+namespace MonsterTradingCard.Exceptions.UserNotFoundException
 {
     [Serializable]
     internal class UserNotFoundException : Exception

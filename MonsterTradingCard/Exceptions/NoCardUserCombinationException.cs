@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MonsterTradingCard.NoCardUserCombinationException
+namespace MonsterTradingCard.Exceptions.NoCardUserCombinationException
 {
     [Serializable]
     internal class NoCardUserCombinationException : Exception

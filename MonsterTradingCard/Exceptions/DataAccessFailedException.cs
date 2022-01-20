@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MonsterTradingCard.DAL.DataAccessFailedException
+namespace MonsterTradingCard.Exceptions.DataAccessFailedException
 {
     class DataAccessFailedException : Exception
     {

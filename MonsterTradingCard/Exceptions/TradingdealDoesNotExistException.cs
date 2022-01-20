@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MonsterTradingCard.TradingdealDoesNotExistException
+namespace MonsterTradingCard.Exceptions.TradingdealDoesNotExistException
 {
     [Serializable]
     public class TradingdealDoesNotExistException : Exception

@@ -2,7 +2,7 @@
 using HTTPServerCore.Response.Response;
 using HTTPServerCore.Response.StatusCode;
 using MonsterTradingCard.Models.Card;
-using DECKINVALID = MonsterTradingCard.DeckNot4CardsException;
+using DECKINVALID = MonsterTradingCard.Exceptions.DeckNot4CardsException;
 using PROT_ROUTE_COM = MonsterTradingCard.RouteCommands.ProtectedRouteCommand;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
 

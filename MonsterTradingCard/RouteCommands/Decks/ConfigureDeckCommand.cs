@@ -4,8 +4,8 @@ using HTTPServerCore.Response.StatusCode;
 using MonsterTradingCard.Models.Card;
 using PROT_ROUTE_COM = MonsterTradingCard.RouteCommands.ProtectedRouteCommand;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
-using NOUSERCARD = MonsterTradingCard.NoCardUserCombinationException;
-using CARDTRADE = MonsterTradingCard.CardIsAvailabelToTrade;
+using NOUSERCARD = MonsterTradingCard.Exceptions.NoCardUserCombinationException;
+using CARDTRADE = MonsterTradingCard.Exceptions.CardIsAvailabelToTradeException;
 
 namespace MonsterTradingCard.RouteCommands.Decks.ConfigureDeckCommand
 {
@@ -35,7 +35,7 @@ namespace MonsterTradingCard.RouteCommands.Decks.ConfigureDeckCommand
 
                     foreach (string cardId in cardIds)
                         if (messageManager.CheckCardForTrade(cardId))
-                            throw new CARDTRADE.CardIsAvailabelToTrade(cardId);
+                            throw new CARDTRADE.CardIsAvailabelToTradeException(cardId);
 
                     if (messageManager.UserDeckExists(User.Token))
                     {
@@ -55,7 +55,7 @@ namespace MonsterTradingCard.RouteCommands.Decks.ConfigureDeckCommand
                     response.Payload = "User besitzt Karte nicht!";
                     response.StatusCode = StatusCode.NotFound;
                 }
-                catch (CARDTRADE.CardIsAvailabelToTrade e)
+                catch (CARDTRADE.CardIsAvailabelToTradeException e)
                 {
                     response.Payload = $"Card {e} wird gerade gehandelt!";
                     response.StatusCode = StatusCode.Conflict;

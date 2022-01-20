@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MonsterTradingCard.DuplicateUserException
+namespace MonsterTradingCard.Exceptions.DuplicateUserException
 {
     internal class DuplicateUserException : Exception
     {

@@ -2,7 +2,7 @@
 using MonsterTradingCard.Models.Deck;
 using MonsterTradingCard.Models.FightLog;
 using MonsterTradingCard.Models.Round;
-using DECKINVALID = MonsterTradingCard.DeckNot4CardsException;
+using DECKINVALID = MonsterTradingCard.Exceptions.DeckNot4CardsException;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
 using MonsterTradingCard.Models.Enums.CardType;
 using MonsterTradingCard.Models.Enums.Element;

@@ -3,7 +3,7 @@ using HTTPServerCore.Response.Response;
 using HTTPServerCore.Response.StatusCode;
 using MonsterTradingCard.Models.TradingDeal;
 using MonsterTradingCard.Models.Card;
-using INVALIDEAL = MonsterTradingCard.TradingdealDoesNotExistException;
+using INVALIDEAL = MonsterTradingCard.Exceptions.TradingdealDoesNotExistException;
 using PROT_ROUTE_COM = MonsterTradingCard.RouteCommands.ProtectedRouteCommand;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
 

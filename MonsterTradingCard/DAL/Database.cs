@@ -1,5 +1,5 @@
 ﻿using Npgsql;
-using DAFE = MonsterTradingCard.DAL.DataAccessFailedException;
+using DAFE = MonsterTradingCard.Exceptions.DataAccessFailedException;
 using IUSER = MonsterTradingCard.DAL.IUserRepository;
 using ICARD = MonsterTradingCard.DAL.ICardRepository;
 using IPACK = MonsterTradingCard.DAL.IPackageRepository;

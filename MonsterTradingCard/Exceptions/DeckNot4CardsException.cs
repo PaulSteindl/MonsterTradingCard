@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MonsterTradingCard.DeckNot4CardsException
+namespace MonsterTradingCard.Exceptions.DeckNot4CardsException
 {
     [Serializable]
     internal class DeckNot4CardsException : Exception

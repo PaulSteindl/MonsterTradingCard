@@ -12,24 +12,17 @@ namespace MonsterTradingCard.DAL.DatabaseCardRepository
     {
         private const string CreateTableCommand =   @"create table if not exists cards
                                                     (
-                                                        card_id     text                  not null
+                                                        card_id text    not null
                                                             constraint cards_pk
                                                                 primary key,
-                                                        name        text                  not null,
-                                                        dmg         integer               not null,
-                                                        ""tradeOpen"" boolean default false not null,
-                                                        token text
+                                                        name    text    not null,
+                                                        dmg     integer not null,
+                                                        token   text
                                                             constraint cards_users_token_fk
-                                                                references users(token)
+                                                                references users (token)
                                                                 on update cascade on delete cascade
                                                                 deferrable initially deferred
                                                     );
-
-                                                    alter table cards
-                                                        owner to postgres;
-
-                                                            create unique index if not exists cards_card_id_uindex
-                                                                on cards(card_id);
                                                     ";
 
         private const string InsertCardCommand = "INSERT INTO cards(card_id, name, dmg) VALUES (@card_id, @name, @dmg)";

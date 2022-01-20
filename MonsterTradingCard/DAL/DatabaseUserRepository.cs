@@ -24,7 +24,10 @@ namespace MonsterTradingCard.DAL.DatabaseUserRepository
                                                         image    text    default '-.-'::text not null,
                                                         wins     integer default 0           not null,
                                                         loses    integer default 0           not null,
-                                                        coins    integer default 20          not null
+                                                        coins    integer default 20          not null,
+                                                        draws    integer default 0           not null,
+                                                        name     text,
+                                                        elo      integer default 100         not null
                                                     );
 
                                                     alter table users

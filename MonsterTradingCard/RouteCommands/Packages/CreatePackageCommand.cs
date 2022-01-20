@@ -3,7 +3,7 @@ using HTTPServerCore.Response.StatusCode;
 using MonsterTradingCard.Models.Card;
 using PROT_ROUTE_COM = MonsterTradingCard.RouteCommands.ProtectedRouteCommand;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
-using DUPCARD = MonsterTradingCard.DuplicateCardException;
+using DUPCARD = MonsterTradingCard.Exceptions.DuplicateCardException;
 using System.Collections.Generic;
 
 namespace MonsterTradingCard.RouteCommands.Packages.CreatePackageCommand

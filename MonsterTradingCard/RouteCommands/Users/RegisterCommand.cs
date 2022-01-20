@@ -3,7 +3,7 @@ using HTTPServerCore.Routing.IRouteCommand;
 using HTTPServerCore.Response.StatusCode;
 using MonsterTradingCard.Models.Credentials;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
-using DUPLICATEUSER = MonsterTradingCard.DuplicateUserException;
+using DUPLICATEUSER = MonsterTradingCard.Exceptions.DuplicateUserException;
 
 namespace MonsterTradingCard.RouteCommands.Users.RegisterCommand
 {

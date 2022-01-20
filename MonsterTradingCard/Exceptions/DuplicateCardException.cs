@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MonsterTradingCard.DuplicateCardException
+namespace MonsterTradingCard.Exceptions.DuplicateCardException
 {
     public class DuplicateCardException : Exception
     {

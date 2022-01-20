@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MonsterTradingCard.NoStatsUpdateException
+namespace MonsterTradingCard.Exceptions.NoStatsUpdateException
 {
     [Serializable]
     internal class NoStatsUpdateException : Exception

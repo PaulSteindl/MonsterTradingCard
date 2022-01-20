@@ -4,7 +4,7 @@ using HTTPServerCore.Response.StatusCode;
 using MonsterTradingCard.Models.Credentials;
 using MonsterTradingCard.Models.User;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
-using USER_NOT_FOUND = MonsterTradingCard.UserNotFoundException;
+using USER_NOT_FOUND = MonsterTradingCard.Exceptions.UserNotFoundException;
 
 namespace MonsterTradingCard.RouteCommands.Users.LoginCommand
 {

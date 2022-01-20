@@ -2,9 +2,9 @@
 using HTTPServerCore.Response.Response;
 using HTTPServerCore.Response.StatusCode;
 using PROT_ROUTE_COM = MonsterTradingCard.RouteCommands.ProtectedRouteCommand;
-using INVALIDDECK = MonsterTradingCard.DeckNot4CardsException;
+using INVALIDDECK = MonsterTradingCard.Exceptions.DeckNot4CardsException;
 using IMSGMANAGER = MonsterTradingCard.IMessageManager;
-using NOSTATSUPDATE = MonsterTradingCard.NoStatsUpdateException;
+using NOSTATSUPDATE = MonsterTradingCard.Exceptions.NoStatsUpdateException;
 using BATTLEMANAGER = MonsterTradingCard.BattleManager;
 using System.Collections.Generic;
 using MonsterTradingCard.Models.Deck;
